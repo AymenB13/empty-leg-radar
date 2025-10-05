@@ -10,7 +10,7 @@ export function usePatternsHotHours(filters?: HotHoursFilter) {
       let query = supabase
         .from("patterns_hot_hours_by_airport")
         .select("*")
-        .order("short_turn_rate_30d", { ascending: false });
+        .order("as_of_date", { ascending: false });
 
       if (filters?.icao) {
         query = query.eq("icao", filters.icao);
