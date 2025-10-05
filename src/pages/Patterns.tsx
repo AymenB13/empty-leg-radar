@@ -42,12 +42,15 @@ export default function Patterns() {
   const { data: rtbRoutes, isLoading: loadingRTBRoutes, error: errorRTBRoutes, refetch: refetchRTBRoutes } = usePatternsRTBRoutes({ limit: 50 });
   
   // Filter data client-side
-  const filteredHotHours = hotHours?.filter(airport => {
-    if (selectedAirportHH && airport.icao !== selectedAirportHH) return false;
-    return true;
-  });
+  const filteredHotHours = hotHours
+    ?.filter(airport => airport.icao != null)
+    ?.filter(airport => {
+      if (selectedAirportHH && airport.icao !== selectedAirportHH) return false;
+      return true;
+    });
   
   const filteredTailHabits = tailHabits
+    ?.filter(tail => tail.n_number != null)
     ?.filter(tail => {
       if (minSampleTH && (tail.sample_n_30d || 0) < parseInt(minSampleTH)) return false;
       return true;
@@ -58,12 +61,14 @@ export default function Patterns() {
       return bVal - aVal;
     });
   
-  const filteredRTBRoutes = rtbRoutes?.filter(route => {
-    if (depAirport && route.dep_icao !== depAirport) return false;
-    if (arrAirport && route.arr_icao !== arrAirport) return false;
-    if (minSampleRTB && (route.sample_n_30d || 0) < parseInt(minSampleRTB)) return false;
-    return true;
-  });
+  const filteredRTBRoutes = rtbRoutes
+    ?.filter(route => route.dep_icao != null && route.arr_icao != null)
+    ?.filter(route => {
+      if (depAirport && route.dep_icao !== depAirport) return false;
+      if (arrAirport && route.arr_icao !== arrAirport) return false;
+      if (minSampleRTB && (route.sample_n_30d || 0) < parseInt(minSampleRTB)) return false;
+      return true;
+    });
 
   const handleAddToSignalsFilter = (nNumber: string) => {
     toast({
@@ -124,11 +129,13 @@ export default function Patterns() {
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
                       <SelectItem value="">All airports</SelectItem>
-                      {hotHours?.map(airport => (
-                        <SelectItem key={airport.icao} value={airport.icao || ""}>
-                          {airport.icao}
-                        </SelectItem>
-                      ))}
+                      {hotHours
+                        ?.filter(airport => airport.icao != null)
+                        ?.map(airport => (
+                          <SelectItem key={airport.icao} value={airport.icao!}>
+                            {airport.icao}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
