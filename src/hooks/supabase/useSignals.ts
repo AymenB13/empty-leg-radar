@@ -12,8 +12,9 @@ export function useSignals(filters?: SignalsFilter) {
       let query = supabase
         .from("emptyleg_signals")
         .select("*")
+        .gte("created_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
         .order("created_at", { ascending: false })
-        .limit(100);
+        .limit(200);
 
       // Apply filters
       if (filters?.status?.length) {
