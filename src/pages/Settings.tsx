@@ -99,9 +99,9 @@ export default function Settings() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium">Settings</h1>
+          <h1 className="text-2xl font-medium">Your feed & alerts</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Configure notifications and preferences
+            Control which airports you track and how you get notified.
           </p>
         </div>
 

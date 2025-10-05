@@ -51,7 +51,7 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-medium">Empty Leg Radar</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Sign in with your email to continue
+            Enter your email for a magic link.
           </p>
         </div>
 

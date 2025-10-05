@@ -65,9 +65,9 @@ export default function Patterns() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium">Pattern Intelligence</h1>
+          <h1 className="text-2xl font-medium">Patterns that close deals</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Daily refreshed insights and trends
+            Historical behavior by airport, tail, and route.
           </p>
         </div>
 

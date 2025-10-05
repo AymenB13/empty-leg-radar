@@ -11,22 +11,54 @@ import { MultiSelectAirports } from "@/components/signals/MultiSelectAirports";
 import { CountdownTimer } from "@/components/signals/CountdownTimer";
 import { ProbabilityBadge } from "@/components/signals/ProbabilityBadge";
 import { SignalActions } from "@/components/signals/SignalActions";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export default function Signals() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { settings } = useUserSettings();
   const [selectedAirports, setSelectedAirports] = useState<string[]>([]);
   const [probThreshold, setProbThreshold] = useState(0.6);
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "sent">("all");
   const [search, setSearch] = useState("");
   
-  // Initialize filters from settings
-  useState(() => {
-    if (settings) {
+  // Initialize from URL params or settings
+  useEffect(() => {
+    const airportsParam = searchParams.get("airports");
+    const thresholdParam = searchParams.get("threshold");
+    const statusParam = searchParams.get("status");
+    const searchParam = searchParams.get("search");
+
+    if (airportsParam) {
+      setSelectedAirports(airportsParam.split(","));
+    } else if (settings) {
       setSelectedAirports(settings.airports || []);
+    }
+
+    if (thresholdParam) {
+      setProbThreshold(parseFloat(thresholdParam));
+    } else if (settings) {
       setProbThreshold(settings.prob_threshold || 0.6);
     }
-  });
+
+    if (statusParam && (statusParam === "pending" || statusParam === "sent" || statusParam === "all")) {
+      setStatusFilter(statusParam);
+    }
+
+    if (searchParam) {
+      setSearch(searchParam);
+    }
+  }, [settings, searchParams]);
+
+  // Update URL params when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedAirports.length > 0) params.set("airports", selectedAirports.join(","));
+    if (probThreshold !== 0.6) params.set("threshold", probThreshold.toString());
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (search) params.set("search", search);
+    setSearchParams(params, { replace: true });
+  }, [selectedAirports, probThreshold, statusFilter, search, setSearchParams]);
   
   const { signals, isLoading, refetch } = useSignals({
     airports: selectedAirports.length > 0 ? selectedAirports : undefined,
@@ -54,9 +86,9 @@ export default function Signals() {
     <AppLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-medium">Signals Live</h1>
+          <h1 className="text-2xl font-medium">Live empty-leg signals</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Real-time empty leg opportunities
+            Jets turning around now, ranked by close probability.
           </p>
         </div>
         
