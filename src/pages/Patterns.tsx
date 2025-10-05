@@ -20,7 +20,7 @@ export default function Patterns() {
   const { toast } = useToast();
   
   // Hot Hours filters
-  const [selectedAirportHH, setSelectedAirportHH] = useState<string>("");
+  const [selectedAirportHH, setSelectedAirportHH] = useState<string>("ALL_AIRPORTS");
   const [minSampleHH, setMinSampleHH] = useState("");
   const [timezoneDisplay, setTimezoneDisplay] = useState<"UTC" | "Local">("UTC");
   
@@ -45,7 +45,7 @@ export default function Patterns() {
   const filteredHotHours = hotHours
     ?.filter(airport => airport.icao != null)
     ?.filter(airport => {
-      if (selectedAirportHH && airport.icao !== selectedAirportHH) return false;
+      if (selectedAirportHH && selectedAirportHH !== "ALL_AIRPORTS" && airport.icao !== selectedAirportHH) return false;
       return true;
     });
   
@@ -128,7 +128,7 @@ export default function Patterns() {
                       <SelectValue placeholder="All airports" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
-                      <SelectItem value="">All airports</SelectItem>
+                      <SelectItem value="ALL_AIRPORTS">All airports</SelectItem>
                       {hotHours
                         ?.filter(airport => airport.icao != null)
                         ?.map(airport => (
@@ -201,7 +201,7 @@ export default function Patterns() {
               <Card className="p-12 text-center text-sm text-muted-foreground">
                 No patterns found for these filters
               </Card>
-            ) : selectedAirportHH ? (
+            ) : selectedAirportHH && selectedAirportHH !== "ALL_AIRPORTS" ? (
               // Single airport card view
               <Card className="p-6">
                 {(() => {
