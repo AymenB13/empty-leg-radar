@@ -809,6 +809,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          airports: string[] | null
+          created_at: string
+          id: string
+          notify_email: string | null
+          notify_slack_webhook: string | null
+          prob_threshold: number | null
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          airports?: string[] | null
+          created_at?: string
+          id?: string
+          notify_email?: string | null
+          notify_slack_webhook?: string | null
+          prob_threshold?: number | null
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          airports?: string[] | null
+          created_at?: string
+          id?: string
+          notify_email?: string | null
+          notify_slack_webhook?: string | null
+          prob_threshold?: number | null
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       watch_airports: {
         Row: {
           active: boolean | null
@@ -854,6 +890,36 @@ export type Database = {
           notes?: string | null
           offset_minutes?: number | null
           tz?: string | null
+        }
+        Relationships: []
+      }
+      watchlists: {
+        Row: {
+          created_at: string
+          filters: Json | null
+          id: string
+          kind: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          kind: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json | null
+          id?: string
+          kind?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plane } from "lucide-react";
-import { toast } from "sonner";
+import { useUserSettings } from "@/hooks/supabase/useUserSettings";
 
 const DEFAULT_AIRPORTS = [
   { code: "KTEB", name: "Teterboro, NJ" },
@@ -15,8 +15,9 @@ const DEFAULT_AIRPORTS = [
 ];
 
 export default function Onboarding() {
-  const [selectedAirports, setSelectedAirports] = useState<string[]>([]);
+  const [selectedAirports, setSelectedAirports] = useState<string[]>(["KTEB", "KVNY", "LFPB"]);
   const navigate = useNavigate();
+  const { createSettings } = useUserSettings();
 
   const handleToggle = (code: string) => {
     setSelectedAirports((prev) =>
@@ -25,11 +26,10 @@ export default function Onboarding() {
   };
 
   const handleContinue = () => {
-    if (selectedAirports.length === 0) {
-      toast.error("Please select at least one airport");
-      return;
-    }
-    toast.success("Setup complete!");
+    createSettings({
+      airports: selectedAirports,
+      prob_threshold: 0.6,
+    });
     navigate("/signals");
   };
 
