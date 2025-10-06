@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signals from "./pages/Signals";
 import Patterns from "./pages/Patterns";
@@ -25,7 +26,7 @@ const App = () => (
           <Route path="/signals" element={<ProtectedRoute><Signals /></ProtectedRoute>} />
           <Route path="/patterns" element={<ProtectedRoute><Patterns /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/" element={<Navigate to="/signals" replace />} />
+          <Route path="/" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -25,23 +25,23 @@ export default function Login() {
 
   const validateForm = () => {
     if (!email || !password) {
-      toast.error("Email et mot de passe requis");
+      toast.error("Email and password required");
       return false;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("Format d'email invalide");
+      toast.error("Invalid email format");
       return false;
     }
 
     if (password.length < 8) {
-      toast.error("Le mot de passe doit contenir au moins 8 caractères");
+      toast.error("Password must be at least 8 characters");
       return false;
     }
 
     if (mode === "register" && password !== confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      toast.error("Passwords do not match");
       return false;
     }
 
@@ -64,12 +64,12 @@ export default function Login() {
 
         if (error) {
           if (error.message.includes("Invalid login credentials")) {
-            toast.error("Email ou mot de passe incorrect");
+            toast.error("Invalid email or password");
           } else {
             toast.error(error.message);
           }
         } else {
-          toast.success("Connexion réussie !");
+          toast.success("Successfully logged in!");
           navigate("/signals");
         }
       } else {
@@ -83,17 +83,17 @@ export default function Login() {
 
         if (error) {
           if (error.message.includes("already registered")) {
-            toast.error("Cet email est déjà utilisé");
+            toast.error("This email is already registered");
           } else {
             toast.error(error.message);
           }
         } else {
-          toast.success("Compte créé avec succès !");
+          toast.success("Account created successfully!");
           navigate("/signals");
         }
       }
     } catch (error: any) {
-      toast.error("Une erreur est survenue");
+      toast.error("An error occurred");
     } finally {
       setLoading(false);
     }
@@ -110,7 +110,7 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-medium">Empty Leg Radar</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {mode === "login" ? "Connectez-vous à votre compte" : "Créez votre compte"}
+            {mode === "login" ? "Sign in to your account" : "Create your account"}
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export default function Login() {
           <div className="relative">
             <Input
               type={showPassword ? "text" : "password"}
-              placeholder="Mot de passe"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -152,7 +152,7 @@ export default function Login() {
             <div>
               <Input
                 type="password"
-                placeholder="Confirmez le mot de passe"
+                placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -164,11 +164,11 @@ export default function Login() {
           <Button type="submit" className="h-12 w-full" disabled={loading}>
             {loading
               ? mode === "login"
-                ? "Connexion..."
-                : "Création du compte..."
+                ? "Signing in..."
+                : "Creating account..."
               : mode === "login"
-              ? "Se connecter"
-              : "Créer un compte"}
+              ? "Sign in"
+              : "Create account"}
           </Button>
         </form>
 
@@ -184,13 +184,13 @@ export default function Login() {
           >
             {mode === "login" ? (
               <>
-                Pas de compte ?{" "}
-                <span className="font-medium text-primary">S'inscrire</span>
+                No account?{" "}
+                <span className="font-medium text-primary">Sign up</span>
               </>
             ) : (
               <>
-                Déjà un compte ?{" "}
-                <span className="font-medium text-primary">Se connecter</span>
+                Already have an account?{" "}
+                <span className="font-medium text-primary">Sign in</span>
               </>
             )}
           </button>
