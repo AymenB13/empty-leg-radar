@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plane, Calendar, Building2, ExternalLink, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface OpportunityCardProps {
   opportunity: BrokerFeed;
@@ -27,10 +28,17 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
             <span>{opportunity.airport_arr_icao || "???"}</span>
           </div>
           {opportunity.operator_primary && (
-            <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300">
-              <Shield className="h-3 w-3 mr-1" />
-              Part 135
-            </Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300 cursor-help">
+                  <Shield className="h-3 w-3 mr-1" />
+                  Part 135
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Certified Part 135 (US). Eligible for on-demand charter.</p>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       </CardHeader>

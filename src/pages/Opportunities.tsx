@@ -3,18 +3,20 @@ import { OpportunityCard } from "@/components/opportunities/OpportunityCard";
 import { useBrokerFeed } from "@/hooks/supabase/useBrokerFeed";
 import { Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function Opportunities() {
   const { data: opportunities, isLoading, error, refetch } = useBrokerFeed();
 
   return (
     <AppLayout>
-      <div className="max-w-7xl mx-auto">
+      <TooltipProvider>
+        <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-3xl font-bold">Opportunities</h1>
             <p className="text-muted-foreground mt-1">
-              Charter-eligible flights (Part 135) • 7 days back / 3 days forward
+              Certified Part 135 flights (next 72h). Not necessarily empty.
             </p>
           </div>
           <Button 
@@ -42,7 +44,7 @@ export default function Opportunities() {
 
         {!isLoading && !error && opportunities?.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            No charter-eligible flights found in the current time window.
+            No certified flights for your filters.
           </div>
         )}
 
@@ -59,7 +61,8 @@ export default function Opportunities() {
             Showing {opportunities.length} charter-eligible flight{opportunities.length !== 1 ? 's' : ''}
           </div>
         )}
-      </div>
+        </div>
+      </TooltipProvider>
     </AppLayout>
   );
 }

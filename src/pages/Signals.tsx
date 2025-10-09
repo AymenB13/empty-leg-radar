@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export default function Signals() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -75,7 +76,8 @@ export default function Signals() {
 
   return (
     <AppLayout>
-      <div className="space-y-6">
+      <TooltipProvider>
+        <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -86,7 +88,7 @@ export default function Signals() {
               </Badge>
             </div>
             <p className="text-muted-foreground mt-1">
-              Charter-ready signals • Part 135 filtered • Broker-optimized
+              Early empty-leg predictions (scored & Part 135 only).
             </p>
           </div>
           <Button 
@@ -150,10 +152,7 @@ export default function Signals() {
         ) : filteredSignals?.length === 0 ? (
           <Card className="p-12">
             <div className="text-center text-muted-foreground">
-              <p className="text-lg font-medium mb-2">No signals found</p>
-              <p className="text-sm">
-                Adjust your filters or check back later for new heads-up predictions.
-              </p>
+              No early signals match your filters.
             </div>
           </Card>
         ) : (
@@ -170,7 +169,8 @@ export default function Signals() {
             </div>
           </>
         )}
-      </div>
+        </div>
+      </TooltipProvider>
     </AppLayout>
   );
 }

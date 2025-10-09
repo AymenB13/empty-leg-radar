@@ -7,6 +7,7 @@ import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink, Shield } from
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface HeadsUpCardProps {
   signal: SignalPublishEnriched;
@@ -65,10 +66,17 @@ Reason: ${signal.reason || "N/A"}
           </div>
           
           {/* Badge Part 135 */}
-          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300">
-            <Shield className="h-3 w-3 mr-1" />
-            Part 135
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300 cursor-help">
+                <Shield className="h-3 w-3 mr-1" />
+                Part 135
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Certified Part 135 (US). Eligible for on-demand charter.</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Time to Depart (prominent) */}
