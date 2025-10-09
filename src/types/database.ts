@@ -9,6 +9,7 @@ export type WatchlistInsert = Database["public"]["Tables"]["watchlists"]["Insert
 export type WatchlistUpdate = Database["public"]["Tables"]["watchlists"]["Update"];
 
 export type EmptylegSignal = Database["public"]["Tables"]["emptyleg_signals"]["Row"];
+export type SignalPublishEnriched = Database["public"]["Views"]["signals_publish_enriched"]["Row"];
 export type BrokerFeed = Database["public"]["Views"]["broker_feed"]["Row"];
 export type PatternsHotHours = Database["public"]["Views"]["patterns_hot_hours_by_airport"]["Row"];
 export type PatternsTailHabits = Database["public"]["Views"]["patterns_tail_habits"]["Row"];

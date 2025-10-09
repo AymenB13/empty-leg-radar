@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { EmptylegSignal } from "@/types/database";
+import { SignalPublishEnriched } from "@/types/database";
 import { SignalsFilter } from "@/types/filters";
 import { toast } from "sonner";
 
@@ -10,19 +10,17 @@ export function useSignals(filters?: SignalsFilter) {
     queryKey: ["signals", filters],
     queryFn: async () => {
       let query = supabase
-        .from("emptyleg_signals")
+        .from("signals_publish_enriched")
         .select("*")
-        .gte("created_at", new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString())
-        .order("created_at", { ascending: false })
-        .limit(200);
+        .order("etd_next", { ascending: true })
+        .limit(100);
 
-      // Apply filters
-      if (filters?.status?.length) {
-        query = query.in("status", filters.status);
-      }
-
+      // Apply filters - from_icao OR to_icao
       if (filters?.airports?.length) {
-        query = query.in("airport_icao", filters.airports);
+        const orConditions = filters.airports.map(apt => 
+          `from_icao.eq.${apt},to_icao.eq.${apt}`
+        ).join(',');
+        query = query.or(orConditions);
       }
 
       const { data, error } = await query;
@@ -30,41 +28,25 @@ export function useSignals(filters?: SignalsFilter) {
       if (error) throw error;
 
       // Client-side probability threshold filter
-      let filtered = data as EmptylegSignal[];
+      let filtered = data as SignalPublishEnriched[];
       if (filters?.probThreshold !== undefined) {
         filtered = filtered.filter(
-          (signal) => (signal.prob_final || 0) >= filters.probThreshold!
+          (signal) => (signal.prob_headsup || 0) >= filters.probThreshold!
         );
       }
 
       return filtered;
     },
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 
-  // Realtime subscription
+  // Auto-refresh polling (view doesn't support realtime)
   useEffect(() => {
-    const channel = supabase
-      .channel("signals-changes")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "emptyleg_signals",
-        },
-        (payload) => {
-          console.log("Signal update:", payload);
-          refetch();
-          if (payload.eventType === "INSERT") {
-            toast.info("New signal detected");
-          }
-        }
-      )
-      .subscribe();
+    const interval = setInterval(() => {
+      refetch();
+    }, 60000); // Refresh every 60 seconds
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => clearInterval(interval);
   }, [refetch]);
 
   return { signals, isLoading, error, refetch };
