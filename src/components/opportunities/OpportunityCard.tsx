@@ -46,26 +46,55 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
       <CardContent className="space-y-2">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Calendar className="h-4 w-4" />
-          <span>ETD: {etdFormatted}</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-help">ETD: {etdFormatted}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">UTC times; subject to change.</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         
         <div className="flex items-center gap-2 text-sm">
           <Plane className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{opportunity.aircraft_model || "Unknown model"}</span>
-          <span className="text-muted-foreground">• {opportunity.n_number || "N/A"}</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="font-medium cursor-help">{opportunity.aircraft_model || "Unknown model"}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">As reported by the data source.</p>
+            </TooltipContent>
+          </Tooltip>
+          <span className="text-muted-foreground">• </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-muted-foreground cursor-help">{opportunity.n_number || "N/A"}</span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">US registration used to match Part 135.</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         
         {opportunity.operator_primary && (
-          <button
-            onClick={() => setShowOperatorInfo(true)}
-            className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 p-2 -m-2 rounded transition-colors group"
-          >
-            <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            <span className="truncate group-hover:text-primary transition-colors">
-              {opportunity.operator_primary}
-            </span>
-            <ExternalLink className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setShowOperatorInfo(true)}
+                className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 p-2 -m-2 rounded transition-colors group cursor-help"
+              >
+                <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="truncate group-hover:text-primary transition-colors">
+                  {opportunity.operator_primary}
+                </span>
+                <ExternalLink className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Holder of the Part 135 certificate for this tail.</p>
+            </TooltipContent>
+          </Tooltip>
         )}
         
         {(opportunity.flight_number || opportunity.call_sign) && (

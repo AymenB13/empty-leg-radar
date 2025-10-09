@@ -144,49 +144,107 @@ Reason: ${signal.reason || "N/A"}
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <Plane className="h-4 w-4 text-muted-foreground" />
-            <span className="font-semibold">{signal.aircraft_model || "Unknown"}</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="font-semibold cursor-help">{signal.aircraft_model || "Unknown"}</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">As reported by the data source.</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
           <div className="text-sm text-muted-foreground pl-6">
-            Tail: <span className="font-mono font-medium">{signal.n_number || "N/A"}</span>
+            Tail: <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="font-mono font-medium cursor-help">{signal.n_number || "N/A"}</span>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">US registration used to match Part 135.</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
         {/* Operator */}
         {signal.operator_primary && (
-          <button
-            onClick={() => setShowOperatorInfo(true)}
-            className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 p-2 -m-2 rounded transition-colors group"
-          >
-            <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
-            <span className="truncate group-hover:text-primary transition-colors">
-              {signal.operator_primary}
-            </span>
-            <ExternalLink className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setShowOperatorInfo(true)}
+                className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 p-2 -m-2 rounded transition-colors group cursor-help"
+              >
+                <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                <span className="truncate group-hover:text-primary transition-colors">
+                  {signal.operator_primary}
+                </span>
+                <ExternalLink className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Holder of the Part 135 certificate for this tail.</p>
+            </TooltipContent>
+          </Tooltip>
         )}
 
         {/* Probabilities */}
         <div className="flex gap-2">
-          <Badge variant="secondary" className="font-mono">
-            Heads-up: {signal.prob_headsup ? (signal.prob_headsup * 100).toFixed(0) : "—"}%
-          </Badge>
-          <Badge variant="outline" className="font-mono">
-            Empty: {signal.prob_emptyleg ? (signal.prob_emptyleg * 100).toFixed(0) : "—"}%
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="secondary" className="font-mono cursor-help">
+                Heads-up: {signal.prob_headsup ? (signal.prob_headsup * 100).toFixed(0) : "—"}%
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Confidence in the signal (data completeness & pattern strength).</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant="outline" className="font-mono cursor-help">
+                Empty: {signal.prob_emptyleg ? (signal.prob_emptyleg * 100).toFixed(0) : "—"}%
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Model estimate that next leg is empty.</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Reason */}
         {signal.reason && (
-          <div className="flex items-start gap-2 text-xs bg-muted/50 p-2 rounded">
-            <AlertCircle className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
-            <span className="text-muted-foreground">{signal.reason}</span>
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-start gap-2 text-xs bg-muted/50 p-2 rounded cursor-help">
+                <AlertCircle className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <span className="text-muted-foreground">{signal.reason}</span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Top driver behind the prediction (e.g., short ground time).</p>
+            </TooltipContent>
+          </Tooltip>
         )}
 
         {/* Timing details */}
         <div className="text-xs text-muted-foreground border-t pt-2 space-y-1">
-          <div>ETD: {etdFormatted}</div>
-          {etaFormatted && <div>ETA: {etaFormatted}</div>}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="cursor-help">ETD: {etdFormatted}</div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">UTC times; subject to change.</p>
+            </TooltipContent>
+          </Tooltip>
+          {etaFormatted && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="cursor-help">ETA: {etaFormatted}</div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">UTC times; subject to change.</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </div>
       </CardContent>
 
