@@ -192,8 +192,13 @@ export default function Settings() {
             </div>
           </Card>
 
-          <Card className="p-6">
-            <h2 className="text-lg font-medium">Notifications</h2>
+          <Card className="p-6 opacity-60">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-medium">Notifications</h2>
+              <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                Coming Soon
+              </Badge>
+            </div>
             <p className="mt-1 text-sm text-muted-foreground">
               Configure alert channels
             </p>
@@ -209,11 +214,12 @@ export default function Settings() {
                     value={slackWebhook}
                     onChange={(e) => setSlackWebhook(e.target.value)}
                     className="flex-1"
+                    disabled={true}
                   />
                   <Button
                     variant="secondary"
                     onClick={handleTestSlack}
-                    disabled={!slackWebhook || isTestingSlack}
+                    disabled={true}
                   >
                     <Send className="h-4 w-4 mr-2" />
                     Test
@@ -230,13 +236,14 @@ export default function Settings() {
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={true}
                 />
                 <p className="text-xs text-muted-foreground">Receive email notifications</p>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="timezone">Timezone</Label>
-                <Select value={timezone} onValueChange={setTimezone}>
+                <Select value={timezone} onValueChange={setTimezone} disabled={true}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

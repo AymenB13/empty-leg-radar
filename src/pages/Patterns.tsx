@@ -11,10 +11,9 @@ import { usePatternsTailHabits } from "@/hooks/supabase/usePatternsTailHabits";
 import { usePatternsRTBRoutes } from "@/hooks/supabase/usePatternsRTBRoutes";
 import { HeatStrip } from "@/components/patterns/HeatStrip";
 import { exportToCSV } from "@/lib/signal-utils";
-import { Download, Bug, Plane } from "lucide-react";
+import { Download, Plane } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function Patterns() {
   const { toast } = useToast();
@@ -80,34 +79,11 @@ export default function Patterns() {
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-medium">Patterns that close deals</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Historical behavior by airport, tail, and route.
-            </p>
-          </div>
-          
-          {/* Debug Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Bug className="h-4 w-4 mr-2" />
-                Debug
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-popover">
-              <DropdownMenuItem onClick={() => console.log('[DEBUG] Hot Hours:', hotHours?.[0])}>
-                Fetch 1 Hot Hours row
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log('[DEBUG] Tail Habits:', tailHabits?.[0])}>
-                Fetch 1 Tail Habits row
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => console.log('[DEBUG] RTB Routes:', rtbRoutes?.[0])}>
-                Fetch 1 RTB Route row
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div>
+          <h1 className="text-2xl font-medium">Patterns that close deals</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Historical behavior by airport, tail, and route.
+          </p>
         </div>
 
         <Tabs defaultValue="hot-hours" className="space-y-6">

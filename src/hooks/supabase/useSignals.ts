@@ -36,6 +36,14 @@ export function useSignals(filters?: SignalsFilter) {
         );
       }
 
+      // Filter out past predictions
+      filtered = filtered.filter(
+        (signal) => {
+          if (!signal.etd_next) return true; // Keep if no date
+          return new Date(signal.etd_next) > new Date(); // Only future flights
+        }
+      );
+
       return filtered;
     },
     staleTime: 1000 * 60 * 2, // 2 minutes
