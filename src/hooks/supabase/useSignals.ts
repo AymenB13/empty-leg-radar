@@ -12,6 +12,7 @@ export function useSignals(filters?: SignalsFilter) {
       let query = supabase
         .from("signals_publish_enriched")
         .select("*")
+        .order("prob_emptyleg", { ascending: false, nullsFirst: false })
         .order("etd_next", { ascending: true })
         .limit(100);
 

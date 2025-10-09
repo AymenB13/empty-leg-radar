@@ -3,7 +3,7 @@ import { SignalPublishEnriched } from "@/types/database";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink } from "lucide-react";
+import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink, Shield } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
@@ -65,8 +65,9 @@ Reason: ${signal.reason || "N/A"}
           </div>
           
           {/* Badge Part 135 */}
-          <Badge className="bg-green-600 hover:bg-green-700 text-white">
-            Part 135 ✓
+          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300">
+            <Shield className="h-3 w-3 mr-1" />
+            Part 135
           </Badge>
         </div>
 

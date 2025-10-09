@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { MultiSelectAirports } from "@/components/signals/MultiSelectAirports";
 import { HeadsUpCard } from "@/components/signals/HeadsUpCard";
+import { Badge } from "@/components/ui/badge";
 import { RefreshCw } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -78,7 +79,12 @@ export default function Signals() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Heads-up Predictions</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-3xl font-bold">Heads-up Predictions</h1>
+              <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100 border-orange-300">
+                Early
+              </Badge>
+            </div>
             <p className="text-muted-foreground mt-1">
               Charter-ready signals • Part 135 filtered • Broker-optimized
             </p>

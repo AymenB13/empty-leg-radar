@@ -9,8 +9,8 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const navItems = [
-    { to: "/signals", icon: Activity, label: "Signals" },
     { to: "/opportunities", icon: Briefcase, label: "Opportunities" },
+    { to: "/signals", icon: Activity, label: "Signals" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
     { to: "/settings", icon: Settings, label: "Settings" },
   ];

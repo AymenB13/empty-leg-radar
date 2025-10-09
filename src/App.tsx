@@ -28,7 +28,7 @@ const App = () => (
           <Route path="/opportunities" element={<ProtectedRoute><Opportunities /></ProtectedRoute>} />
           <Route path="/patterns" element={<ProtectedRoute><Patterns /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Navigate to="/opportunities" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

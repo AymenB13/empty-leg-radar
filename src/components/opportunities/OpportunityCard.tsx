@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BrokerFeed } from "@/types/database";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Calendar, Building2, ExternalLink } from "lucide-react";
+import { Plane, Calendar, Building2, ExternalLink, Shield } from "lucide-react";
 import { format } from "date-fns";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
 
@@ -26,7 +26,8 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
             <Plane className="h-4 w-4 text-muted-foreground" />
             <span>{opportunity.airport_arr_icao || "???"}</span>
           </div>
-          <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300">
+            <Shield className="h-3 w-3 mr-1" />
             Part 135
           </Badge>
         </div>
