@@ -75,7 +75,7 @@ Reason: ${signal.reason || "N/A"}
               <PopoverContent className="w-80">
                 <div className="space-y-3 text-sm">
                   <div>
-                    <h4 className="font-semibold mb-1">Why am I seeing this?</h4>
+                    <h4 className="font-semibold mb-1">Why am I seeing this flight?</h4>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-start gap-2">

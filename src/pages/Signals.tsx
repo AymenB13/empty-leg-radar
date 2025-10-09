@@ -9,11 +9,13 @@ import { Button } from "@/components/ui/button";
 import { MultiSelectAirports } from "@/components/signals/MultiSelectAirports";
 import { HeadsUpCard } from "@/components/signals/HeadsUpCard";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, HelpCircle, ChevronDown, Plane, Clock, TrendingUp, AlertCircle } from "lucide-react";
+import { RefreshCw, HelpCircle, ChevronDown, Plane, Clock, TrendingUp, AlertCircle, BookOpen, Shield } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Signals() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,6 +24,7 @@ export default function Signals() {
   const [probThreshold, setProbThreshold] = useState(0.6);
   const [search, setSearch] = useState("");
   const [showHelp, setShowHelp] = useState(false);
+  const [showGlossary, setShowGlossary] = useState(false);
   
   // Initialize from URL params or settings
   useEffect(() => {
@@ -93,14 +96,47 @@ export default function Signals() {
               Early empty-leg predictions (scored & Part 135 only).
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => refetch()}
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            <Popover open={showGlossary} onOpenChange={setShowGlossary}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <BookOpen className="h-4 w-4 mr-2" />
+                  Glossary
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-3">
+                  <h4 className="font-semibold text-sm">Mini Glossary</h4>
+                  <div className="space-y-2 text-xs">
+                    <div>
+                      <p className="font-medium">Part 135</p>
+                      <p className="text-muted-foreground">US certificate authorizing on-demand charter.</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">Empty leg</p>
+                      <p className="text-muted-foreground">Repositioning/empty segment likely sellable.</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">Heads-up</p>
+                      <p className="text-muted-foreground">Early signal triggered by operational patterns.</p>
+                    </div>
+                    <div>
+                      <p className="font-medium">De-dup (tail×minute)</p>
+                      <p className="text-muted-foreground">Prevent alert spam for the same aircraft/time.</p>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => refetch()}
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Help Section */}
@@ -165,6 +201,38 @@ export default function Signals() {
                     Short driver (e.g., Fast turnaround)
                   </p>
                 </div>
+
+                {/* Badge Legend */}
+                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 p-3 rounded-lg">
+                  <h3 className="font-semibold mb-2 flex items-center gap-2 text-sm">
+                    <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    Badge Legend
+                  </h3>
+                  <div className="space-y-2 text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs">
+                        <Shield className="h-3 w-3 mr-1" />
+                        Part 135
+                      </Badge>
+                      <span className="text-xs">US charter-eligible.</span>
+                    </div>
+                    <p className="text-xs">• <strong>Non-US (grey):</strong> (optional later) needs EASA/AOC module to qualify.</p>
+                    <p className="text-xs">• <strong>Not eligible:</strong> No Part 135/AOC match.</p>
+                  </div>
+                </div>
+
+                {/* Common Edge Cases */}
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <h4 className="font-medium mb-2 text-sm">Common Edge Cases</h4>
+                    <ul className="space-y-1 text-xs text-muted-foreground">
+                      <li>• <strong>Missing tail:</strong> We fallback via Mode-S (ICAO24) and timing.</li>
+                      <li>• <strong>Different names:</strong> Owner (FAA) ≠ operator (Part 135) is normal.</li>
+                      <li>• <strong>Cargo / Part 121:</strong> May appear in Opportunities but won't get a Part 135 badge.</li>
+                    </ul>
+                  </AlertDescription>
+                </Alert>
               </div>
             </Card>
           </CollapsibleContent>
@@ -235,6 +303,19 @@ export default function Signals() {
             {/* Count footer */}
             <div className="text-center text-sm text-muted-foreground">
               {filteredSignals?.length || 0} active prediction{filteredSignals?.length !== 1 ? 's' : ''}
+            </div>
+
+            {/* Data Freshness Footer */}
+            <div className="flex items-start gap-3 p-3 bg-muted/30 rounded-lg border">
+              <Clock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">
+                  <strong>Updated continuously;</strong> materialized views refresh server-side.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Flight status and routings can change without notice.
+                </p>
+              </div>
             </div>
           </>
         )}
