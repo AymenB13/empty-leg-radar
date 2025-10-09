@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatProbability } from "@/lib/signal-utils";
 import { EmptylegSignal } from "@/types/database";
 
@@ -21,17 +21,15 @@ export function ProbabilityBadge({ signal }: ProbabilityBadgeProps) {
   );
   
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge variant="secondary" className="font-mono cursor-help">
-            {displayValue}
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent>
-          {tooltipContent}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Badge variant="secondary" className="font-mono cursor-help">
+          {displayValue}
+        </Badge>
+      </TooltipTrigger>
+      <TooltipContent>
+        {tooltipContent}
+      </TooltipContent>
+    </Tooltip>
   );
 }

@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface HeatStripProps {
   hourData: number[];
@@ -9,9 +9,8 @@ export function HeatStrip({ hourData, topHours }: HeatStripProps) {
   const maxValue = Math.max(...hourData);
   
   return (
-    <TooltipProvider>
-      <div className="flex items-end gap-0.5 h-16">
-        {hourData.map((value, hour) => {
+    <div className="flex items-end gap-0.5 h-16">
+      {hourData.map((value, hour) => {
           const heightPercent = maxValue > 0 ? (value / maxValue) * 100 : 0;
           const isTopHour = topHours.includes(hour);
           
@@ -36,8 +35,7 @@ export function HeatStrip({ hourData, topHours }: HeatStripProps) {
               </TooltipContent>
             </Tooltip>
           );
-        })}
-      </div>
-    </TooltipProvider>
+      })}
+    </div>
   );
 }
