@@ -26,10 +26,12 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
             <Plane className="h-4 w-4 text-muted-foreground" />
             <span>{opportunity.airport_arr_icao || "???"}</span>
           </div>
-          <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300">
-            <Shield className="h-3 w-3 mr-1" />
-            Part 135
-          </Badge>
+          {opportunity.operator_primary && (
+            <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300">
+              <Shield className="h-3 w-3 mr-1" />
+              Part 135
+            </Badge>
+          )}
         </div>
       </CardHeader>
       
