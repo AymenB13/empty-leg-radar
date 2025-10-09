@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { MultiSelectAirports } from "@/components/signals/MultiSelectAirports";
 import { HeadsUpCard } from "@/components/signals/HeadsUpCard";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, HelpCircle, ChevronDown, Plane, Clock, TrendingUp, AlertCircle } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 export default function Signals() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,6 +21,7 @@ export default function Signals() {
   const [selectedAirports, setSelectedAirports] = useState<string[]>([]);
   const [probThreshold, setProbThreshold] = useState(0.6);
   const [search, setSearch] = useState("");
+  const [showHelp, setShowHelp] = useState(false);
   
   // Initialize from URL params or settings
   useEffect(() => {
@@ -100,6 +102,73 @@ export default function Signals() {
             Refresh
           </Button>
         </div>
+
+        {/* Help Section */}
+        <Collapsible open={showHelp} onOpenChange={setShowHelp}>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span className="flex items-center gap-2">
+                <HelpCircle className="h-4 w-4" />
+                Help: What am I seeing?
+              </span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${showHelp ? "rotate-180" : ""}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <Card className="p-4 mt-2 bg-muted/30">
+              <div className="space-y-4 text-sm">
+                <div>
+                  <h3 className="font-semibold mb-2">What You're Seeing</h3>
+                  <p className="text-muted-foreground">
+                    Early predicted empty legs, already filtered to Part 135 and de-duplicated.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">Each Card Shows</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <Plane className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span><strong>Route:</strong> FROM → TO (derived from recent ops)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Clock className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span><strong>ETD next (UTC) and ETA arrival</strong> (context)</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <Plane className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span><strong>Tail & Operator</strong> (Part 135 holder)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">Scores</h3>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <TrendingUp className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span><strong>Empty-leg probability:</strong> Chance the next sector is empty</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <TrendingUp className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span><strong>Heads-up score:</strong> Confidence in the signal itself</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-background border p-3 rounded">
+                  <h3 className="font-semibold mb-1 flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4" />
+                    Reason
+                  </h3>
+                  <p className="text-muted-foreground text-xs">
+                    Short driver (e.g., Fast turnaround)
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
         
         {/* Filter Header */}
         <Card className="p-4">
@@ -152,7 +221,7 @@ export default function Signals() {
         ) : filteredSignals?.length === 0 ? (
           <Card className="p-12">
             <div className="text-center text-muted-foreground">
-              No early signals match your filters.
+              No early signals match your filters. Lower the probability or add airports.
             </div>
           </Card>
         ) : (

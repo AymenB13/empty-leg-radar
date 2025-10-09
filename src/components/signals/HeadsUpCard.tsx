@@ -3,11 +3,12 @@ import { SignalPublishEnriched } from "@/types/database";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink, Shield } from "lucide-react";
+import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink, Shield, HelpCircle } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface HeadsUpCardProps {
   signal: SignalPublishEnriched;
@@ -63,6 +64,58 @@ Reason: ${signal.reason || "N/A"}
             <span className="text-foreground">{signal.from_icao || "???"}</span>
             <Plane className="h-5 w-5 text-muted-foreground" />
             <span className="text-foreground">{signal.to_icao || "???"}</span>
+            
+            {/* "Why am I seeing this?" Popover */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-muted-foreground hover:text-primary transition-colors">
+                  <HelpCircle className="h-4 w-4" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <h4 className="font-semibold mb-1">Why am I seeing this?</h4>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <Shield className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium">Certified Part 135 ✅</p>
+                        <p className="text-xs text-muted-foreground">FAA/135 match confirmed</p>
+                      </div>
+                    </div>
+                    {signal.reason && (
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium">Operational pattern</p>
+                          <p className="text-xs text-muted-foreground">{signal.reason}</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-2">
+                      <Clock className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium">Timing window</p>
+                        <p className="text-xs text-muted-foreground">
+                          dep ~ {etdFormatted}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Plane className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="font-medium">De-dup</p>
+                        <p className="text-xs text-muted-foreground">
+                          One alert per tail per minute
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
           
           {/* Badge Part 135 */}

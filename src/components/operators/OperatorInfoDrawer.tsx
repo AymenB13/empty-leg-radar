@@ -154,9 +154,7 @@ export function OperatorInfoDrawer({
                   <div className="text-sm text-blue-900 dark:text-blue-100">
                     <p className="font-semibold mb-1">Certification Notice</p>
                     <p>
-                      Source: FAA Part 135 registry. The displayed operator name may differ 
-                      from the FAA registered owner. This data confirms charter eligibility 
-                      under US regulations.
+                      FAA owner/registrant can differ from the charter operator (trust/management common).
                     </p>
                   </div>
                 </div>
