@@ -14,3 +14,4 @@ export type BrokerFeed = Database["public"]["Views"]["broker_feed"]["Row"];
 export type PatternsHotHours = Database["public"]["Views"]["patterns_hot_hours_by_airport"]["Row"];
 export type PatternsTailHabits = Database["public"]["Views"]["patterns_tail_habits"]["Row"];
 export type PatternsRTBRoutes = Database["public"]["Views"]["patterns_rtb_routes"]["Row"];
+export type TailOperatorMap = Database["public"]["Views"]["tail_operator_map_mv"]["Row"];

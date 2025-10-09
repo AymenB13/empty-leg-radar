@@ -1,14 +1,18 @@
+import { useState } from "react";
 import { BrokerFeed } from "@/types/database";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Calendar, Building2 } from "lucide-react";
+import { Plane, Calendar, Building2, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
+import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
 
 interface OpportunityCardProps {
   opportunity: BrokerFeed;
 }
 
 export function OpportunityCard({ opportunity }: OpportunityCardProps) {
+  const [showOperatorInfo, setShowOperatorInfo] = useState(false);
+  
   const etdFormatted = opportunity.etd_utc 
     ? format(new Date(opportunity.etd_utc), "MMM dd, HH:mm 'UTC'")
     : "N/A";
@@ -41,10 +45,16 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
         </div>
         
         {opportunity.operator_primary && (
-          <div className="flex items-center gap-2 text-sm">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span>{opportunity.operator_primary}</span>
-          </div>
+          <button
+            onClick={() => setShowOperatorInfo(true)}
+            className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 p-2 -m-2 rounded transition-colors group"
+          >
+            <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="truncate group-hover:text-primary transition-colors">
+              {opportunity.operator_primary}
+            </span>
+            <ExternalLink className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
         )}
         
         {(opportunity.flight_number || opportunity.call_sign) && (
@@ -55,6 +65,13 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
           </div>
         )}
       </CardContent>
+
+      <OperatorInfoDrawer
+        nNumber={opportunity.n_number}
+        operatorName={opportunity.operator_primary}
+        open={showOperatorInfo}
+        onOpenChange={setShowOperatorInfo}
+      />
     </Card>
   );
 }

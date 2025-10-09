@@ -1,16 +1,20 @@
+import { useState } from "react";
 import { SignalPublishEnriched } from "@/types/database";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plane, Clock, Building2, AlertCircle, Copy } from "lucide-react";
+import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
+import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
 
 interface HeadsUpCardProps {
   signal: SignalPublishEnriched;
 }
 
 export function HeadsUpCard({ signal }: HeadsUpCardProps) {
+  const [showOperatorInfo, setShowOperatorInfo] = useState(false);
+  
   const etdFormatted = signal.etd_next 
     ? format(new Date(signal.etd_next), "MMM dd, HH:mm 'UTC'")
     : "N/A";
@@ -87,10 +91,16 @@ Reason: ${signal.reason || "N/A"}
 
         {/* Operator */}
         {signal.operator_primary && (
-          <div className="flex items-center gap-2 text-sm">
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-            <span className="truncate">{signal.operator_primary}</span>
-          </div>
+          <button
+            onClick={() => setShowOperatorInfo(true)}
+            className="flex items-center gap-2 text-sm w-full text-left hover:bg-muted/50 p-2 -m-2 rounded transition-colors group"
+          >
+            <Building2 className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+            <span className="truncate group-hover:text-primary transition-colors">
+              {signal.operator_primary}
+            </span>
+            <ExternalLink className="h-3 w-3 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
         )}
 
         {/* Probabilities */}
@@ -129,6 +139,13 @@ Reason: ${signal.reason || "N/A"}
           Copy Pitch
         </Button>
       </CardFooter>
+
+      <OperatorInfoDrawer
+        nNumber={signal.n_number}
+        operatorName={signal.operator_primary}
+        open={showOperatorInfo}
+        onOpenChange={setShowOperatorInfo}
+      />
     </Card>
   );
 }
