@@ -7,6 +7,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signals from "./pages/Signals";
+import Opportunities from "./pages/Opportunities";
 import Patterns from "./pages/Patterns";
 import Settings from "./pages/Settings";
 import Onboarding from "./pages/Onboarding";
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
           <Route path="/signals" element={<ProtectedRoute><Signals /></ProtectedRoute>} />
+          <Route path="/opportunities" element={<ProtectedRoute><Opportunities /></ProtectedRoute>} />
           <Route path="/patterns" element={<ProtectedRoute><Patterns /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/" element={<Home />} />

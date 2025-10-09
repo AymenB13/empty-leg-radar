@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Activity, BarChart3, Settings } from "lucide-react";
+import { Activity, BarChart3, Settings, Briefcase } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 
 interface AppLayoutProps {
@@ -10,6 +10,7 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const navItems = [
     { to: "/signals", icon: Activity, label: "Signals" },
+    { to: "/opportunities", icon: Briefcase, label: "Opportunities" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
     { to: "/settings", icon: Settings, label: "Settings" },
   ];
