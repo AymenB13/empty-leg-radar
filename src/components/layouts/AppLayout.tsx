@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { Activity, BarChart3, Settings, Briefcase } from "lucide-react";
 import { UserMenu } from "./UserMenu";
+import { AboutDialog } from "@/components/AboutDialog";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -19,7 +20,10 @@ export function AppLayout({ children }: AppLayoutProps) {
     <div className="min-h-screen flex flex-col">
       {/* Top Bar */}
       <header className="h-14 border-b border-border bg-background flex items-center justify-between px-6">
-        <h1 className="text-lg font-medium">Empty Leg Radar</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-medium">Empty Leg Radar</h1>
+          <AboutDialog />
+        </div>
         <UserMenu />
       </header>
       

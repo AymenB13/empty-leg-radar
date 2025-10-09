@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useUserSettings } from "@/hooks/supabase/useUserSettings";
 import { toast } from "sonner";
 import { sendToSlack } from "@/lib/signal-utils";
+import { Info } from "lucide-react";
 
 const DEFAULT_AIRPORTS = [
   { code: "KTEB", name: "Teterboro, NJ" },
@@ -76,6 +77,23 @@ export default function Onboarding() {
 
         {step === 1 && (
           <div>
+            {/* Welcome Card */}
+            <div className="bg-muted/50 border border-border rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <Info className="h-5 w-5 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div className="space-y-2 text-sm">
+                  <p className="font-medium">Welcome to Empty Leg Radar</p>
+                  <p className="text-muted-foreground leading-relaxed">
+                    This app surfaces charter-eligible flights (Part 135) and early empty-leg signals 
+                    using FAA registry, Part 135 certificates, and ADS-B flight data.
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    <strong>Note:</strong> Informational signals only. Availability and prices not guaranteed.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <h1 className="text-2xl font-bold mb-2">Pick 2–3 airports to follow</h1>
             <p className="text-sm text-muted-foreground mb-6">
               You'll see signals when jets turn around at these bases.
