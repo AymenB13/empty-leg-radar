@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { OpportunityCard } from "@/components/opportunities/OpportunityCard";
 import { useBrokerFeed } from "@/hooks/supabase/useBrokerFeed";
-import { Loader2, RefreshCw, HelpCircle, ChevronDown, Plane, Calendar, Building2, Shield, BookOpen, AlertCircle, Clock } from "lucide-react";
+import { Loader2, HelpCircle, ChevronDown, Plane, Calendar, Building2, Shield, BookOpen, AlertCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -12,7 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
 
 export default function Opportunities() {
-  const { data: opportunities, isLoading, error, refetch } = useBrokerFeed();
+  const { data: opportunities, isLoading, error } = useBrokerFeed();
   const [showHelp, setShowHelp] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
 
@@ -27,48 +27,37 @@ export default function Opportunities() {
               Certified Part 135 flights (next 72h). Not necessarily empty.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Popover open={showGlossary} onOpenChange={setShowGlossary}>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Glossary
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="space-y-3">
-                  <h4 className="font-semibold text-sm">Mini Glossary</h4>
-                  <div className="space-y-2 text-xs">
-                    <div>
-                      <p className="font-medium">Part 135</p>
-                      <p className="text-muted-foreground">US certificate authorizing on-demand charter.</p>
-                    </div>
-                    <div>
-                      <p className="font-medium">Empty leg</p>
-                      <p className="text-muted-foreground">Repositioning/empty segment likely sellable.</p>
-                    </div>
-                    <div>
-                      <p className="font-medium">Heads-up</p>
-                      <p className="text-muted-foreground">Early signal triggered by operational patterns.</p>
-                    </div>
-                    <div>
-                      <p className="font-medium">De-dup (tail×minute)</p>
-                      <p className="text-muted-foreground">Prevent alert spam for the same aircraft/time.</p>
-                    </div>
+          <Popover open={showGlossary} onOpenChange={setShowGlossary}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <BookOpen className="h-4 w-4 mr-2" />
+                Glossary
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-3">
+                <h4 className="font-semibold text-sm">Mini Glossary</h4>
+                <div className="space-y-2 text-xs">
+                  <div>
+                    <p className="font-medium">Part 135</p>
+                    <p className="text-muted-foreground">US certificate authorizing on-demand charter.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Empty leg</p>
+                    <p className="text-muted-foreground">Repositioning/empty segment likely sellable.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Heads-up</p>
+                    <p className="text-muted-foreground">Early signal triggered by operational patterns.</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">De-dup (tail×minute)</p>
+                    <p className="text-muted-foreground">Prevent alert spam for the same aircraft/time.</p>
                   </div>
                 </div>
-              </PopoverContent>
-            </Popover>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => refetch()}
-              disabled={isLoading}
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-          </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <Collapsible open={showHelp} onOpenChange={setShowHelp} className="mb-6">

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { BrokerFeed } from "@/types/database";
+import { useEffect } from "react";
 
 export function useBrokerFeed() {
   const { data, isLoading, error, refetch } = useQuery({
@@ -16,6 +17,15 @@ export function useBrokerFeed() {
     },
     staleTime: 1000 * 60 * 5,
   });
+
+  // Auto-refresh polling
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 60000); // Refresh every 60 seconds
+
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   return { data, isLoading, error, refetch };
 }
