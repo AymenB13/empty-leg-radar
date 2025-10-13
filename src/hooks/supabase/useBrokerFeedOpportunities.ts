@@ -8,11 +8,8 @@ export function useBrokerFeedOpportunities() {
     queryKey: ["brokerFeedOpportunities"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("broker_feed_opportunities" as any)
-        .select("*")
-        .gte("etd_utc", new Date().toISOString())
-        .lte("etd_utc", new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString())
-        .order("etd_utc", { ascending: true });
+        .from("broker_feed_opportunities_72h" as any)
+        .select("*");
 
       if (error) throw error;
       return data as unknown as BrokerFeedOpportunities[];
