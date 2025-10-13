@@ -1,6 +1,7 @@
 import { AppLayout } from "@/components/layouts/AppLayout";
 import { OpportunityCard } from "@/components/opportunities/OpportunityCard";
-import { useBrokerFeed } from "@/hooks/supabase/useBrokerFeed";
+import { useBrokerFeedEnriched } from "@/hooks/supabase/useBrokerFeedEnriched";
+import { useBrokerFeedOpportunities } from "@/hooks/supabase/useBrokerFeedOpportunities";
 import { Loader2, HelpCircle, ChevronDown, Plane, Calendar, Building2, Shield, BookOpen, AlertCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,10 +10,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
 
 export default function Opportunities() {
-  const { data: opportunities, isLoading, error } = useBrokerFeed();
+  const { data: liveFeed, isLoading: isLoadingLive, error: errorLive } = useBrokerFeedEnriched();
+  const { data: probableLegs, isLoading: isLoadingProbable, error: errorProbable } = useBrokerFeedOpportunities();
   const [showHelp, setShowHelp] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
 
@@ -76,8 +79,8 @@ export default function Opportunities() {
                 <div>
                   <h4 className="font-medium mb-2">What You're Seeing</h4>
                   <ul className="space-y-1 text-muted-foreground">
-                    <li>• Certified Part 135 flights in the next 72h.</li>
-                    <li>• Not necessarily empty; this is your qualified hunting ground.</li>
+                    <li>• <strong>Live Feed:</strong> All certified Part 135 flights in the next 72h.</li>
+                    <li>• <strong>Empty Legs Probables:</strong> High-probability empty legs (score ≥ threshold).</li>
                   </ul>
                 </div>
 
@@ -100,6 +103,10 @@ export default function Opportunities() {
                     <li className="flex items-start gap-2">
                       <Building2 className="h-4 w-4 mt-0.5 flex-shrink-0" />
                       <span><strong>Tail (N-number) and Operator:</strong> Part 135 certificate holder</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      <span><strong>Reason & Turn:</strong> shown when linked to a signal (pattern detection)</span>
                     </li>
                   </ul>
                 </div>
@@ -141,59 +148,120 @@ export default function Opportunities() {
           </CollapsibleContent>
         </Collapsible>
 
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        )}
-
-        {error && (
-          <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
-            Error loading opportunities: {error.message}
-          </div>
-        )}
-
-        {!isLoading && !error && opportunities?.length === 0 && (
-          <Card className="p-12">
-            <div className="text-center">
-              <p className="text-lg font-medium text-muted-foreground mb-2">
-                No certified flights for your filters.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Expand time window or airports in Settings.
-              </p>
-            </div>
-          </Card>
-        )}
-
-        {!isLoading && opportunities && opportunities.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {opportunities.map((opp) => (
-              <OpportunityCard key={opp.id} opportunity={opp} />
-            ))}
-          </div>
-        )}
-
-        {!isLoading && opportunities && opportunities.length > 0 && (
-          <>
-            <div className="mt-6 text-center text-sm text-muted-foreground">
-              Showing {opportunities.length} charter-eligible flight{opportunities.length !== 1 ? 's' : ''}
-            </div>
-            
-            {/* Data Freshness Footer */}
-            <div className="mt-4 flex items-start gap-3 p-3 bg-muted/30 rounded-lg border">
-              <Clock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  <strong>Updated continuously;</strong> materialized views refresh server-side.
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Flight status and routings can change without notice.
-                </p>
+        <Tabs defaultValue="live" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="live">Live Feed</TabsTrigger>
+            <TabsTrigger value="probable">Empty Legs Probables</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="live" className="mt-6">
+            {isLoadingLive && (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-            </div>
-          </>
-        )}
+            )}
+
+            {errorLive && (
+              <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
+                Error loading live feed: {errorLive.message}
+              </div>
+            )}
+
+            {!isLoadingLive && !errorLive && liveFeed?.length === 0 && (
+              <Card className="p-12">
+                <div className="text-center">
+                  <p className="text-lg font-medium text-muted-foreground mb-2">
+                    No certified flights in the feed.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Check back soon or expand time window.
+                  </p>
+                </div>
+              </Card>
+            )}
+
+            {!isLoadingLive && liveFeed && liveFeed.length > 0 && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {liveFeed.map((opp) => (
+                    <OpportunityCard key={opp.broker_feed_id || opp.signal_id} opportunity={opp} />
+                  ))}
+                </div>
+                
+                <div className="mt-6 text-center text-sm text-muted-foreground">
+                  Showing {liveFeed.length} charter-eligible flight{liveFeed.length !== 1 ? 's' : ''}
+                </div>
+                
+                {/* Data Freshness Footer */}
+                <div className="mt-4 flex items-start gap-3 p-3 bg-muted/30 rounded-lg border">
+                  <Clock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      <strong>Updated continuously;</strong> materialized views refresh server-side.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Flight status and routings can change without notice.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="probable" className="mt-6">
+            {isLoadingProbable && (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            )}
+
+            {errorProbable && (
+              <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-lg">
+                Error loading probable empty legs: {errorProbable.message}
+              </div>
+            )}
+
+            {!isLoadingProbable && !errorProbable && probableLegs?.length === 0 && (
+              <Card className="p-12">
+                <div className="text-center">
+                  <p className="text-lg font-medium text-muted-foreground mb-2">
+                    No high-probability empty legs found.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Adjust probability threshold in Settings or check back later.
+                  </p>
+                </div>
+              </Card>
+            )}
+
+            {!isLoadingProbable && probableLegs && probableLegs.length > 0 && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {probableLegs.map((opp) => (
+                    <OpportunityCard key={opp.broker_feed_id || opp.signal_id} opportunity={opp} />
+                  ))}
+                </div>
+                
+                <div className="mt-6 text-center text-sm text-muted-foreground">
+                  Showing {probableLegs.length} high-probability empty leg{probableLegs.length !== 1 ? 's' : ''}
+                </div>
+                
+                {/* Data Freshness Footer */}
+                <div className="mt-4 flex items-start gap-3 p-3 bg-muted/30 rounded-lg border">
+                  <Clock className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">
+                      <strong>Filtered by probability score;</strong> only flights above threshold.
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Adjust threshold in Settings to see more or fewer opportunities.
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
+          </TabsContent>
+        </Tabs>
         </div>
       </TooltipProvider>
     </AppLayout>

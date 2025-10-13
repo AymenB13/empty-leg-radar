@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { BrokerFeed } from "@/types/database";
+import { BrokerFeedOpportunities } from "@/types/database";
 import { useEffect } from "react";
 
-export function useBrokerFeed() {
+export function useBrokerFeedOpportunities() {
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["brokerFeed"],
+    queryKey: ["brokerFeedOpportunities"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("broker_feed")
+        .from("broker_feed_opportunities" as any)
         .select("*")
         .order("etd_utc", { ascending: true });
 
       if (error) throw error;
-      return data as BrokerFeed[];
+      return data as unknown as BrokerFeedOpportunities[];
     },
     staleTime: 1000 * 60 * 5,
   });

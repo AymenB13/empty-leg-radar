@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { BrokerFeed } from "@/types/database";
+import { BrokerFeedEnriched, BrokerFeedOpportunities } from "@/types/database";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plane, Calendar, Building2, ExternalLink, Shield } from "lucide-react";
+import { Plane, Calendar, Building2, ExternalLink, Shield, Clock, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface OpportunityCardProps {
-  opportunity: BrokerFeed;
+  opportunity: BrokerFeedEnriched | BrokerFeedOpportunities;
 }
 
 export function OpportunityCard({ opportunity }: OpportunityCardProps) {
@@ -23,9 +23,9 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-lg font-semibold">
-            <span>{opportunity.airport_dep_icao || "???"}</span>
+            <span>{opportunity.dep_icao || "???"}</span>
             <Plane className="h-4 w-4 text-muted-foreground" />
-            <span>{opportunity.airport_arr_icao || "???"}</span>
+            <span>{opportunity.arr_icao || "???"}</span>
           </div>
           {opportunity.operator_primary && (
             <Tooltip>
@@ -102,6 +102,29 @@ export function OpportunityCard({ opportunity }: OpportunityCardProps) {
             {opportunity.flight_number && <span>Flight: {opportunity.flight_number}</span>}
             {opportunity.flight_number && opportunity.call_sign && <span> • </span>}
             {opportunity.call_sign && <span>Callsign: {opportunity.call_sign}</span>}
+          </div>
+        )}
+        
+        {opportunity.signal_id && (
+          <div className="pt-2 border-t space-y-1">
+            {opportunity.reason && (
+              <div className="flex items-start gap-2 text-xs">
+                <AlertCircle className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="text-muted-foreground">Reason: </span>
+                  <span className="font-medium">{opportunity.reason}</span>
+                </div>
+              </div>
+            )}
+            {opportunity.minutes_between != null && (
+              <div className="flex items-start gap-2 text-xs">
+                <Clock className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="text-muted-foreground">Turn: </span>
+                  <span className="font-medium">{Math.round(opportunity.minutes_between)} min</span>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
