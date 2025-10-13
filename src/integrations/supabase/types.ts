@@ -113,34 +113,6 @@ export type Database = {
             foreignKeyName: "emptyleg_alerts_signal_id_fkey"
             columns: ["signal_id"]
             isOneToOne: false
-            referencedRelation: "broker_feed_enriched"
-            referencedColumns: ["signal_id"]
-          },
-          {
-            foreignKeyName: "emptyleg_alerts_signal_id_fkey"
-            columns: ["signal_id"]
-            isOneToOne: false
-            referencedRelation: "broker_feed_enriched_72h"
-            referencedColumns: ["signal_id"]
-          },
-          {
-            foreignKeyName: "emptyleg_alerts_signal_id_fkey"
-            columns: ["signal_id"]
-            isOneToOne: false
-            referencedRelation: "broker_feed_opportunities"
-            referencedColumns: ["signal_id"]
-          },
-          {
-            foreignKeyName: "emptyleg_alerts_signal_id_fkey"
-            columns: ["signal_id"]
-            isOneToOne: false
-            referencedRelation: "broker_feed_opportunities_72h"
-            referencedColumns: ["signal_id"]
-          },
-          {
-            foreignKeyName: "emptyleg_alerts_signal_id_fkey"
-            columns: ["signal_id"]
-            isOneToOne: false
             referencedRelation: "emptyleg_signals"
             referencedColumns: ["id"]
           },
@@ -236,7 +208,6 @@ export type Database = {
           prob_ml: number | null
           reason: string | null
           reg: string | null
-          reg_norm: string | null
           status: string
           to_icao: string | null
         }
@@ -259,7 +230,6 @@ export type Database = {
           prob_ml?: number | null
           reason?: string | null
           reg?: string | null
-          reg_norm?: string | null
           status?: string
           to_icao?: string | null
         }
@@ -282,7 +252,6 @@ export type Database = {
           prob_ml?: number | null
           reason?: string | null
           reg?: string | null
-          reg_norm?: string | null
           status?: string
           to_icao?: string | null
         }
@@ -636,7 +605,6 @@ export type Database = {
       ingest_logs: {
         Row: {
           airport_icao: string
-          created_at: string
           function_name: string
           id: string
           latency_ms: number
@@ -647,7 +615,6 @@ export type Database = {
         }
         Insert: {
           airport_icao: string
-          created_at?: string
           function_name?: string
           id?: string
           latency_ms?: number
@@ -658,7 +625,6 @@ export type Database = {
         }
         Update: {
           airport_icao?: string
-          created_at?: string
           function_name?: string
           id?: string
           latency_ms?: number
@@ -744,6 +710,33 @@ export type Database = {
           n_number?: string | null
           next_to_icao?: string | null
           turn_mins?: number | null
+        }
+        Relationships: []
+      }
+      opensky_flights: {
+        Row: {
+          callsign: string | null
+          est_arrival_airport: string | null
+          est_departure_airport: string | null
+          first_seen: string
+          icao24: string
+          last_seen: string
+        }
+        Insert: {
+          callsign?: string | null
+          est_arrival_airport?: string | null
+          est_departure_airport?: string | null
+          first_seen: string
+          icao24: string
+          last_seen: string
+        }
+        Update: {
+          callsign?: string | null
+          est_arrival_airport?: string | null
+          est_departure_airport?: string | null
+          first_seen?: string
+          icao24?: string
+          last_seen?: string
         }
         Relationships: []
       }
@@ -986,20 +979,6 @@ export type Database = {
         }
         Relationships: []
       }
-      bfe_demo: {
-        Row: {
-          aircraft_model: string | null
-          arr_icao: string | null
-          dep_icao: string | null
-          etd_utc: string | null
-          minutes_between: number | null
-          n_number: string | null
-          operator_primary: string | null
-          prob_final: number | null
-          reason: string | null
-        }
-        Relationships: []
-      }
       broker_feed: {
         Row: {
           aircraft_model: string | null
@@ -1015,113 +994,10 @@ export type Database = {
         }
         Relationships: []
       }
-      broker_feed_enriched: {
-        Row: {
-          aircraft_model: string | null
-          arr_icao: string | null
-          broker_feed_id: number | null
-          call_sign: string | null
-          dep_icao: string | null
-          etd_utc: string | null
-          flight_number: string | null
-          minutes_between: number | null
-          n_number: string | null
-          operator_count: number | null
-          operator_primary: string | null
-          prob_baseline: number | null
-          prob_final: number | null
-          prob_ml: number | null
-          reason: string | null
-          signal_id: number | null
-          status: string | null
-        }
-        Relationships: []
-      }
-      broker_feed_enriched_72h: {
-        Row: {
-          aircraft_model: string | null
-          arr_icao: string | null
-          broker_feed_id: number | null
-          call_sign: string | null
-          dep_icao: string | null
-          etd_utc: string | null
-          flight_number: string | null
-          minutes_between: number | null
-          n_number: string | null
-          operator_count: number | null
-          operator_primary: string | null
-          prob_baseline: number | null
-          prob_final: number | null
-          prob_ml: number | null
-          reason: string | null
-          signal_id: number | null
-          status: string | null
-        }
-        Relationships: []
-      }
-      broker_feed_opportunities: {
-        Row: {
-          aircraft_model: string | null
-          arr_icao: string | null
-          broker_feed_id: number | null
-          call_sign: string | null
-          dep_icao: string | null
-          etd_utc: string | null
-          flight_number: string | null
-          minutes_between: number | null
-          n_number: string | null
-          operator_count: number | null
-          operator_primary: string | null
-          prob_baseline: number | null
-          prob_final: number | null
-          prob_ml: number | null
-          reason: string | null
-          signal_id: number | null
-          status: string | null
-        }
-        Relationships: []
-      }
-      broker_feed_opportunities_72h: {
-        Row: {
-          aircraft_model: string | null
-          arr_icao: string | null
-          broker_feed_id: number | null
-          call_sign: string | null
-          dep_icao: string | null
-          etd_utc: string | null
-          flight_number: string | null
-          minutes_between: number | null
-          n_number: string | null
-          operator_count: number | null
-          operator_primary: string | null
-          prob_baseline: number | null
-          prob_final: number | null
-          prob_ml: number | null
-          reason: string | null
-          signal_id: number | null
-          status: string | null
-        }
-        Relationships: []
-      }
       charter_eligible_tails: {
         Row: {
           n_number: string | null
           operator_names: string[] | null
-          operator_primary: string | null
-        }
-        Relationships: []
-      }
-      events_bizjet_candidates: {
-        Row: {
-          aircraft_model: string | null
-          id: number | null
-          is_bizjet_candidate: boolean | null
-          is_cargo: boolean | null
-          is_part135_known: boolean | null
-          mdl_is_airline: boolean | null
-          mdl_is_biz: boolean | null
-          n_number_norm: string | null
-          op_is_airline: boolean | null
           operator_primary: string | null
         }
         Relationships: []
@@ -1524,14 +1400,7 @@ export type Database = {
       }
     }
     Functions: {
-      norm_n: {
-        Args: { t: string }
-        Returns: string
-      }
-      refresh_mv_signals_publish: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
