@@ -10,6 +10,8 @@ export function useBrokerFeedEnriched() {
       const { data, error } = await supabase
         .from("broker_feed_enriched" as any)
         .select("*")
+        .gte("etd_utc", new Date().toISOString())
+        .lte("etd_utc", new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString())
         .order("etd_utc", { ascending: true });
 
       if (error) throw error;

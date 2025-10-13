@@ -271,11 +271,14 @@ export default function Opportunities() {
             {!isLoadingProbable && !errorProbable && probableLegs?.length === 0 && (
               <Card className="p-12">
                 <div className="text-center">
-                  <p className="text-lg font-medium text-muted-foreground mb-2">
-                    No high-probability empty legs found.
+                  <p className="text-lg font-medium text-muted-foreground mb-3">
+                    No high-probability empty legs right now
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    This tab shows only flights with <code className="bg-muted px-1.5 py-0.5 rounded text-xs">prob_final ≥ 0.30</code> and status = pending.
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Adjust probability threshold in Settings or check back later.
+                    Check the <strong>Live Feed</strong> tab for all upcoming Part 135 flights.
                   </p>
                 </div>
               </Card>
