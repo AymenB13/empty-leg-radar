@@ -733,6 +733,42 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_contacts: {
+        Row: {
+          created_at: string | null
+          email_sales: string | null
+          id: number
+          last_verified_at: string | null
+          notes: string | null
+          operator_name: string
+          phone_sales: string | null
+          source: string | null
+          website: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email_sales?: string | null
+          id?: number
+          last_verified_at?: string | null
+          notes?: string | null
+          operator_name: string
+          phone_sales?: string | null
+          source?: string | null
+          website?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email_sales?: string | null
+          id?: number
+          last_verified_at?: string | null
+          notes?: string | null
+          operator_name?: string
+          phone_sales?: string | null
+          source?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       ourairports: {
         Row: {
           continent: string | null
@@ -1108,6 +1144,44 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_airport_intel_30d: {
+        Row: {
+          dep_airport: string | null
+          dep_pairs_30d: number | null
+          last_seen: string | null
+          operator_primary: string | null
+          p95_turn_mins: number | null
+          short_turn_rate: number | null
+        }
+        Relationships: []
+      }
+      operator_corridor_intel_30d: {
+        Row: {
+          arr_icao: string | null
+          dep_icao: string | null
+          fill_score: number | null
+          flights_30d: number | null
+          last_seen: string | null
+          operator_primary: string | null
+          short_turn_rate: number | null
+        }
+        Relationships: []
+      }
+      pairs_30d_mv: {
+        Row: {
+          airport_icao: string | null
+          arr_time_utc: string | null
+          arr_uid: string | null
+          dep_icao: string | null
+          dep_time_utc: string | null
+          dep_uid: string | null
+          mode_s: string | null
+          n_number: string | null
+          next_arr_icao: string | null
+          turn_mins: number | null
+        }
+        Relationships: []
+      }
       patterns_hot_hours_by_airport: {
         Row: {
           as_of_date: string | null
@@ -1169,6 +1243,29 @@ export type Database = {
           rtb_rate_30d: number | null
           sample_n_30d: number | null
           turn_short_rate_30d: number | null
+        }
+        Relationships: []
+      }
+      prospect_shortlist_by_airport: {
+        Row: {
+          dep_pairs_30d: number | null
+          icao: string | null
+          last_seen: string | null
+          operator_primary: string | null
+          p95_turn_mins: number | null
+          short_turn_rate: number | null
+        }
+        Relationships: []
+      }
+      prospect_shortlist_by_corridor: {
+        Row: {
+          arr_icao: string | null
+          dep_icao: string | null
+          fill_score: number | null
+          flights_30d: number | null
+          last_seen: string | null
+          operator_primary: string | null
+          short_turn_rate: number | null
         }
         Relationships: []
       }

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Activity, BarChart3, Settings, Briefcase } from "lucide-react";
+import { Activity, BarChart3, Settings, Briefcase, Users } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 import { AboutDialog } from "@/components/AboutDialog";
 
@@ -13,6 +13,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     { to: "/opportunities", icon: Briefcase, label: "Opportunities" },
     { to: "/signals", icon: Activity, label: "Signals" },
     { to: "/patterns", icon: BarChart3, label: "Patterns" },
+    { to: "/prospect", icon: Users, label: "Prospect" },
     { to: "/settings", icon: Settings, label: "Settings" },
   ];
   

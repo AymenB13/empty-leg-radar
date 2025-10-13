@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signals from "./pages/Signals";
 import Opportunities from "./pages/Opportunities";
 import Patterns from "./pages/Patterns";
+import Prospect from "./pages/Prospect";
 import Settings from "./pages/Settings";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/signals" element={<ProtectedRoute><Signals /></ProtectedRoute>} />
           <Route path="/opportunities" element={<ProtectedRoute><Opportunities /></ProtectedRoute>} />
           <Route path="/patterns" element={<ProtectedRoute><Patterns /></ProtectedRoute>} />
+          <Route path="/prospect" element={<ProtectedRoute><Prospect /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/opportunities" replace />} />
           <Route path="*" element={<NotFound />} />

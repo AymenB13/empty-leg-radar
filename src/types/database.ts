@@ -56,3 +56,35 @@ export type BrokerFeedOpportunities = {
   prob_baseline: number | null;
   minutes_between: number | null;
 };
+
+// Types pour Prospect
+export type ProspectShortlistByAirport = {
+  operator_primary: string | null;
+  icao: string | null;
+  dep_pairs_30d: number | null;
+  short_turn_rate: number | null;
+  p95_turn_mins: number | null;
+  last_seen: string | null;
+};
+
+export type ProspectShortlistByCorridor = {
+  operator_primary: string | null;
+  dep_icao: string | null;
+  arr_icao: string | null;
+  flights_30d: number | null;
+  short_turn_rate: number | null;
+  fill_score: number | null;
+  last_seen: string | null;
+};
+
+export type OperatorContact = {
+  id?: number;
+  operator_name: string;
+  website?: string | null;
+  email_sales?: string | null;
+  phone_sales?: string | null;
+  notes?: string | null;
+  source?: string | null;
+  last_verified_at?: string | null;
+  created_at?: string;
+};
