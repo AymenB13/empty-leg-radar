@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layouts/AppLayout";
 import { OpportunityCard } from "@/components/opportunities/OpportunityCard";
 import { useBrokerFeedEnriched } from "@/hooks/supabase/useBrokerFeedEnriched";
 import { useBrokerFeedOpportunities } from "@/hooks/supabase/useBrokerFeedOpportunities";
-import { Loader2, HelpCircle, ChevronDown, Plane, Calendar, Building2, Shield, BookOpen, AlertCircle, Clock } from "lucide-react";
+import { Loader2, HelpCircle, ChevronDown, Plane, Calendar, Building2, Shield, BookOpen, AlertCircle, Clock, Target, Zap, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -73,18 +73,65 @@ export default function Opportunities() {
           </CollapsibleTrigger>
           <CollapsibleContent>
             <Card className="bg-muted/50 mt-3">
-              <CardContent className="pt-6 space-y-4 text-sm">
+              <CardContent className="pt-6 space-y-6 text-sm">
                 
-                {/* Section 1: What you're seeing */}
-                <div>
-                  <h4 className="font-medium mb-2">What You're Seeing</h4>
+                {/* Section 1: Why This Matters - Strategic Value */}
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/30 dark:to-purple-950/30 border border-blue-200 dark:border-blue-800 p-4 rounded-lg">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2 text-base">
+                    <Target className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    Why Knowing Upcoming Part 135 Departures Matters
+                  </h4>
+                  <p className="text-muted-foreground mb-3">
+                    Knowing which bizjets (Part 135) are departing soon serves you, very concretely:
+                  </p>
+                  <ul className="space-y-2 text-muted-foreground">
+                    <li>• <strong>Win the option window.</strong> Imminent departure = 15–90 min to secure the option before competitors.</li>
+                    <li>• <strong>Detect empty leg candidates.</strong> Even without certainty, a pro departure + quick turn + return-to-base = strong suspicion → call the operator, verify, negotiate.</li>
+                    <li>• <strong>Match waiting clients instantly.</strong> Push a credible one-way at the right moment (not 3 hours too late).</li>
+                    <li>• <strong>Negotiate better.</strong> If you know they're repositioning, you have pricing leverage ("transient / RTB pricing").</li>
+                    <li>• <strong>Prioritize your calls.</strong> Stop refreshing 10 sources: call the 3 flights departing where you have a real shot.</li>
+                    <li>• <strong>Create client FOMO.</strong> "Departure in less than 1 hour, seat available if we confirm now."</li>
+                    <li>• <strong>Build operator relationships.</strong> Call with a specific need, not "just in case" → more useful responses.</li>
+                    <li>• <strong>Feed your patterns.</strong> Each heads-up enriches your local stats (hot hours, routes, reactive tails).</li>
+                  </ul>
+                </div>
+
+                {/* Section 2: Mini Playbooks - Tactical Workflows */}
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border border-purple-200 dark:border-purple-800 p-4 rounded-lg">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2 text-base">
+                    <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    Mini Playbooks (Ultra Practical)
+                  </h4>
+                  <div className="space-y-3 text-muted-foreground">
+                    <div className="pl-3 border-l-2 border-purple-300 dark:border-purple-700">
+                      <p><strong>Probable empty leg spotted</strong> → call operator: <em>"N123XX VNY→TEB in ~45 min, available for repositioning? transient rate possible?"</em> → secure 30-min option → ping your 3 hot clients.</p>
+                    </div>
+                    <div className="pl-3 border-l-2 border-purple-300 dark:border-purple-700">
+                      <p><strong>Pro departure without strong signal</strong> → <em>"I see this departure, if you have a back-to-base leg behind it, I can place a client on that segment."</em> → sometimes opens a door.</p>
+                    </div>
+                    <div className="pl-3 border-l-2 border-purple-300 dark:border-purple-700">
+                      <p><strong>Feed + Patterns</strong> → if the airport/hour is typically "hot", even a lukewarm heads-up deserves a call.</p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-purple-200 dark:border-purple-800">
+                      <p className="font-medium text-foreground">Bottom line:</p>
+                      <p>The feed gives you the target to call <strong>now</strong>, and signals/patterns tell you where to push and what to propose. This combo wins deals.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 3: What You're Seeing - Data Overview */}
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    What You're Seeing
+                  </h4>
                   <ul className="space-y-1 text-muted-foreground">
                     <li>• <strong>Live Feed:</strong> All certified Part 135 flights in the next 72h.</li>
                     <li>• <strong>Empty Legs Probables:</strong> High-probability empty legs (score ≥ threshold).</li>
                   </ul>
                 </div>
 
-                {/* Section 2: Each card shows */}
+                {/* Section 4: Each Card Shows */}
                 <div>
                   <h4 className="font-medium mb-2">Each Card Shows</h4>
                   <ul className="space-y-2 text-muted-foreground">
@@ -111,7 +158,7 @@ export default function Opportunities() {
                   </ul>
                 </div>
 
-                {/* Section 3: Badge Legend */}
+                {/* Section 5: Badge Legend */}
                 <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 p-3 rounded-lg">
                   <h4 className="font-medium mb-2 flex items-center gap-2">
                     <Shield className="h-4 w-4 text-blue-600 dark:text-blue-400" />
@@ -130,7 +177,7 @@ export default function Opportunities() {
                   </div>
                 </div>
 
-                {/* Section 4: Common Edge Cases */}
+                {/* Section 6: Common Edge Cases */}
                 <Alert>
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>
