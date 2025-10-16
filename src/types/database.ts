@@ -88,3 +88,31 @@ export type OperatorContact = {
   last_verified_at?: string | null;
   created_at?: string;
 };
+
+// Types pour Daily Briefing
+export type DailyBriefing = {
+  id: number;
+  airport_icao: string;
+  briefing_date: string;
+  hot_hours: {
+    hour: number;
+    score: number;
+    sample_n: number;
+  }[];
+  probable_routes: {
+    dep: string;
+    arr: string;
+    prob: number;
+    dow?: string;
+  }[];
+  priority_operators: {
+    name: string;
+    reason: string;
+    contact?: {
+      email?: string;
+      phone?: string;
+      website?: string;
+    };
+  }[];
+  computed_at: string;
+};
