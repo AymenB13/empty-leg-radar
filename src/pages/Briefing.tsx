@@ -9,8 +9,13 @@ import { HeatStrip } from "@/components/patterns/HeatStrip";
 import { RefreshCw, Mail, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Briefing() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { settings } = useUserSettings();
   const airports = settings?.airports || [];
   const { data: briefings, isLoading, refetch } = useDailyBriefing(airports);
@@ -100,18 +105,29 @@ ${operator.contact?.email ? `Email: ${operator.contact.email}\n` : ''}${operator
 
         {/* Empty state */}
         {!briefings || briefings.length === 0 ? (
-          <Card className="p-12 text-center">
-            <p className="text-lg text-muted-foreground">
+          <Card className="p-12 text-center space-y-4">
+            <p className="text-lg font-medium text-muted-foreground">
               No briefing available for today
             </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              Briefings are generated nightly at 3h UTC
+            <p className="text-sm text-muted-foreground">
+              Briefings are generated nightly at <strong>03:00 UTC</strong>
             </p>
             {airports.length === 0 && (
-              <p className="text-sm text-muted-foreground mt-4">
-                Add airports to your watchlist in <a href="/settings" className="text-primary hover:underline">Settings</a>
+              <p className="text-sm text-muted-foreground">
+                Add airports to your watchlist in{' '}
+                <a href="/settings" className="text-primary hover:underline">
+                  Settings
+                </a>
               </p>
             )}
+            <Button 
+              variant="outline" 
+              onClick={forceRefresh}
+              className="mt-4"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Force Refresh
+            </Button>
           </Card>
         ) : (
           /* Cards par aéroport */
@@ -170,8 +186,7 @@ ${operator.contact?.email ? `Email: ${operator.contact.email}\n` : ''}${operator
                             <Button 
                               variant="outline" 
                               size="sm"
-                              disabled
-                              title="Find Cover coming soon"
+                              onClick={() => openFindCover(route.dep, route.arr)}
                             >
                               Find Cover
                             </Button>
@@ -198,7 +213,7 @@ ${operator.contact?.email ? `Email: ${operator.contact.email}\n` : ''}${operator
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => copyEmailScript(op)}
+                            onClick={() => copyEmailScript(op, briefing.airport_icao)}
                           >
                             <Mail className="h-4 w-4 mr-2" />
                             Copy email

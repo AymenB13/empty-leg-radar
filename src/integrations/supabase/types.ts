@@ -1242,6 +1242,18 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_corridor_intel_90d: {
+        Row: {
+          arr_icao: string | null
+          dep_icao: string | null
+          dow_hist_90d: Json | null
+          flights_90d: number | null
+          hod_hist_90d: Json | null
+          median_block_mins: number | null
+          operator_name: string | null
+        }
+        Relationships: []
+      }
       operator_route_intel_90d: {
         Row: {
           arr_icao: string | null
@@ -1250,7 +1262,7 @@ export type Database = {
           flights_90d: number | null
           hod_hist_90d: Json | null
           median_block_mins: number | null
-          operator_primary: string | null
+          operator_name: string | null
         }
         Relationships: []
       }
