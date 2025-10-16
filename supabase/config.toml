@@ -1,1 +1,15 @@
 project_id = "uqiawlhgseoibvfpghgz"
+
+# Daily Briefing - runs every day at 3h UTC
+[functions.generate-daily-briefing]
+verify_jwt = false
+schedule = "0 3 * * *"
+
+# Operator Intelligence - runs every day at 4h UTC
+[functions.compute-operator-intelligence]
+verify_jwt = false
+schedule = "0 4 * * *"
+
+# Find Cover - on-demand only (requires authentication)
+[functions.find-cover]
+verify_jwt = true

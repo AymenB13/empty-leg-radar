@@ -77,6 +77,36 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_briefing: {
+        Row: {
+          airport_icao: string
+          briefing_date: string
+          computed_at: string | null
+          hot_hours: Json | null
+          id: number
+          priority_operators: Json | null
+          probable_routes: Json | null
+        }
+        Insert: {
+          airport_icao: string
+          briefing_date: string
+          computed_at?: string | null
+          hot_hours?: Json | null
+          id?: number
+          priority_operators?: Json | null
+          probable_routes?: Json | null
+        }
+        Update: {
+          airport_icao?: string
+          briefing_date?: string
+          computed_at?: string | null
+          hot_hours?: Json | null
+          id?: number
+          priority_operators?: Json | null
+          probable_routes?: Json | null
+        }
+        Relationships: []
+      }
       emptyleg_alerts: {
         Row: {
           channel: string
@@ -769,6 +799,39 @@ export type Database = {
         }
         Relationships: []
       }
+      operator_intelligence: {
+        Row: {
+          active_tails: Json | null
+          best_call_time: string | null
+          computed_at: string | null
+          footprint_airports: Json | null
+          hot_hours: Json | null
+          operator_name: string
+          rtb_patterns: Json | null
+          top_routes: Json | null
+        }
+        Insert: {
+          active_tails?: Json | null
+          best_call_time?: string | null
+          computed_at?: string | null
+          footprint_airports?: Json | null
+          hot_hours?: Json | null
+          operator_name: string
+          rtb_patterns?: Json | null
+          top_routes?: Json | null
+        }
+        Update: {
+          active_tails?: Json | null
+          best_call_time?: string | null
+          computed_at?: string | null
+          footprint_airports?: Json | null
+          hot_hours?: Json | null
+          operator_name?: string
+          rtb_patterns?: Json | null
+          top_routes?: Json | null
+        }
+        Relationships: []
+      }
       ourairports: {
         Row: {
           continent: string | null
@@ -1144,14 +1207,26 @@ export type Database = {
         }
         Relationships: []
       }
+      legs_90d: {
+        Row: {
+          arr_icao: string | null
+          arr_time_utc: string | null
+          dep_icao: string | null
+          dep_time_utc: string | null
+          flight_uid: string | null
+          mode_s: string | null
+          n_number: string | null
+        }
+        Relationships: []
+      }
       operator_airport_intel_30d: {
         Row: {
-          dep_airport: string | null
-          dep_pairs_30d: number | null
-          last_seen: string | null
+          airport_icao: string | null
+          flights_30d: number | null
+          median_block_mins: number | null
           operator_primary: string | null
-          p95_turn_mins: number | null
-          short_turn_rate: number | null
+          rtb_rate_24h: number | null
+          short_turn_rate_30d: number | null
         }
         Relationships: []
       }
@@ -1164,6 +1239,18 @@ export type Database = {
           last_seen: string | null
           operator_primary: string | null
           short_turn_rate: number | null
+        }
+        Relationships: []
+      }
+      operator_route_intel_90d: {
+        Row: {
+          arr_icao: string | null
+          dep_icao: string | null
+          dow_hist_90d: Json | null
+          flights_90d: number | null
+          hod_hist_90d: Json | null
+          median_block_mins: number | null
+          operator_primary: string | null
         }
         Relationships: []
       }
@@ -1243,17 +1330,6 @@ export type Database = {
           rtb_rate_30d: number | null
           sample_n_30d: number | null
           turn_short_rate_30d: number | null
-        }
-        Relationships: []
-      }
-      prospect_shortlist_by_airport: {
-        Row: {
-          dep_pairs_30d: number | null
-          icao: string | null
-          last_seen: string | null
-          operator_primary: string | null
-          p95_turn_mins: number | null
-          short_turn_rate: number | null
         }
         Relationships: []
       }
@@ -1552,6 +1628,10 @@ export type Database = {
       norm_n: {
         Args: { t: string }
         Returns: string
+      }
+      refresh_intel_matviews: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
       refresh_mv_signals_publish: {
         Args: Record<PropertyKey, never>
