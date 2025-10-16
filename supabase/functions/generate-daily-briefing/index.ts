@@ -34,21 +34,23 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const startTs = Date.now();
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     console.log('Starting daily briefing generation...');
 
-    // Get distinct active airports from operator_airport_intel_30d
-    const { data: airports, error: airportsError } = await supabase
-      .from('operator_airport_intel_30d')
+    // Get airports from airports_watch (canonical source)
+    const { data: watchRows, error: wErr } = await supabase
+      .from('airports_watch')
       .select('airport_icao')
+      .eq('enabled', true)
       .order('airport_icao');
 
-    if (airportsError) throw airportsError;
+    if (wErr) throw wErr;
 
-    const uniqueAirports = [...new Set(airports?.map(a => a.airport_icao) || [])];
+    const uniqueAirports = [...new Set((watchRows ?? []).map(r => r.airport_icao).filter(Boolean))];
     console.log(`Processing ${uniqueAirports.length} airports...`);
 
     const today = new Date().toISOString().split('T')[0];
@@ -83,13 +85,25 @@ Deno.serve(async (req) => {
       });
 
       // Normalize and create hot_hours array
-      const hot_hours: HotHour[] = hourScores
-        .map((score, hour) => ({
+      let hot_hours: HotHour[];
+      
+      if (totalWeight === 0 || !routeData || routeData.length === 0) {
+        // Fallback: generate business hours pattern (8h-20h)
+        console.log(`No route data for ${airport}, using fallback pattern`);
+        hot_hours = Array.from({ length: 24 }, (_, hour) => ({
           hour,
-          score: totalWeight > 0 ? score / totalWeight : 0,
-          sample_n: routeData?.length || 0,
-        }))
-        .sort((a, b) => b.score - a.score);
+          score: (hour >= 8 && hour <= 20) ? 1/13 : 0,
+          sample_n: 0,
+        }));
+      } else {
+        hot_hours = hourScores
+          .map((score, hour) => ({
+            hour,
+            score: totalWeight > 0 ? score / totalWeight : 0,
+            sample_n: routeData?.length || 0,
+          }))
+          .sort((a, b) => b.score - a.score);
+      }
 
       // 2. PROBABLE ROUTES - top 10 routes by probability
       const { data: routes, error: routesErr } = await supabase
@@ -170,6 +184,16 @@ Deno.serve(async (req) => {
 
     if (upsertError) throw upsertError;
 
+    // Log success to ingest_logs
+    await supabase.from('ingest_logs').insert({
+      function_name: 'generate-daily-briefing',
+      airport_icao: 'ALL',
+      status_code: 200,
+      rows_written: briefings.length,
+      latency_ms: Date.now() - startTs,
+      message: `Generated ${briefings.length} briefings for ${today}`,
+    });
+
     console.log(`Successfully generated ${briefings.length} briefings for ${today}`);
 
     return new Response(
@@ -183,6 +207,25 @@ Deno.serve(async (req) => {
 
   } catch (error: any) {
     console.error('Error generating daily briefing:', error);
+    
+    // Log error to ingest_logs
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      await supabase.from('ingest_logs').insert({
+        function_name: 'generate-daily-briefing',
+        airport_icao: 'ALL',
+        status_code: 500,
+        rows_written: 0,
+        latency_ms: 0,
+        message: `Error: ${error.message}`,
+      });
+    } catch (logError) {
+      console.error('Failed to log error:', logError);
+    }
+    
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

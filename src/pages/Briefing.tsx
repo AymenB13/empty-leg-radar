@@ -27,22 +27,43 @@ export default function Briefing() {
       .slice(0, count);
   };
 
-  const copyEmailScript = (operator: { name: string; reason: string }) => {
-    const script = `Subject: Partnership opportunity - ${operator.name}
+  const openFindCover = (dep: string, arr: string) => {
+    const today = new Date().toISOString().split('T')[0];
+    navigate(`/find-cover?dep=${dep}&arr=${arr}&date=${today}`);
+  };
+
+  const copyEmailScript = (
+    operator: { name: string; reason: string; contact?: any }, 
+    airport: string
+  ) => {
+    const script = `Subject: ${airport} — coordination charter
 
 Hi ${operator.name} team,
 
-We've observed ${operator.reason.toLowerCase()} in our market intelligence.
+We're seeing strong patterns at ${airport} (${operator.reason.toLowerCase()}).
+We often need short-notice coverage there — open to a quick call?
 
-We work with clients who frequently need charter coverage on short notice. Would you be open to a quick conversation about collaboration opportunities?
-
-Looking forward to hearing from you.
-
-Best regards,
+${operator.contact?.email ? `Email: ${operator.contact.email}\n` : ''}${operator.contact?.phone ? `Phone: ${operator.contact.phone}\n` : ''}Best,
 [Your name]`;
 
     navigator.clipboard.writeText(script);
-    toast.success("Email script copied to clipboard");
+    toast.success("Outreach email copied");
+  };
+
+  const forceRefresh = async () => {
+    toast.info("Regenerating daily briefing...");
+    
+    const { error } = await supabase.functions.invoke('generate-daily-briefing', { 
+      body: {} 
+    });
+    
+    if (error) {
+      toast.error(`Failed to regenerate: ${error.message}`);
+      return;
+    }
+    
+    queryClient.invalidateQueries({ queryKey: ["dailyBriefing"] });
+    toast.success("Daily briefing regenerated");
   };
 
   const handleRefresh = () => {
