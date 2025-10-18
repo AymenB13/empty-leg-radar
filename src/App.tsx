@@ -13,6 +13,7 @@ import Patterns from "./pages/Patterns";
 import Prospect from "./pages/Prospect";
 import Settings from "./pages/Settings";
 import Onboarding from "./pages/Onboarding";
+import FindCover from "./pages/FindCover";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/patterns" element={<ProtectedRoute><Patterns /></ProtectedRoute>} />
           <Route path="/prospect" element={<ProtectedRoute><Prospect /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/find-cover" element={<ProtectedRoute><FindCover /></ProtectedRoute>} />
           <Route path="/" element={<Navigate to="/briefing" replace />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
