@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // 1. Query operator_route_intel_90d for matching routes
     let operatorQuery = supabase
       .from('operator_route_intel_90d')
-      .select('operator_primary, dep_icao, arr_icao, legs_90d, short_turn_rate, median_block_mins, last_seen_at')
+      .select('operator_name, dep_icao, arr_icao, legs_90d, short_turn_rate, median_block_mins, last_seen_at')
       .eq('dep_icao', dep_icao)
       .order('legs_90d', { ascending: false });
 
@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
     }).sort((a, b) => b.score - a.score) || [];
 
     // 3. Enrich with operator contacts
-    const operatorNames = scoredOperators.map(o => o.operator_primary);
+    const operatorNames = scoredOperators.map(o => o.operator_name);
     const { data: contacts } = await supabase
       .from('operator_contacts')
       .select('operator_name, email_sales, phone_sales, website')
@@ -74,11 +74,11 @@ Deno.serve(async (req) => {
     const contactMap = new Map(contacts?.map(c => [c.operator_name, c]) || []);
 
     const operators = scoredOperators.map(op => {
-      const contact = contactMap.get(op.operator_primary);
+      const contact = contactMap.get(op.operator_name);
       const route = arr_icao ? `${dep_icao}→${arr_icao}` : `${dep_icao}→any`;
       
       return {
-        name: op.operator_primary,
+        name: op.operator_name,
         reason: `Flew ${route} ${op.legs_90d}x last 90d, median block ${op.median_block_mins || 'N/A'}min, short-turn rate ${Math.round((op.short_turn_rate || 0) * 100)}%`,
         legs_90d: op.legs_90d,
         short_turn_rate: op.short_turn_rate || 0,
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
           phone: contact.phone_sales || undefined,
           website: contact.website || undefined,
         } : undefined,
-        email_script: generateEmailScript(op.operator_primary, dep_icao, arr_icao, request_date, request_time_utc, aircraft_category, op),
+        email_script: generateEmailScript(op.operator_name, dep_icao, arr_icao, request_date, request_time_utc, aircraft_category, op),
       };
     });
 
