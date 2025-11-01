@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { HeatStrip } from "@/components/patterns/HeatStrip";
+import BriefingAssistant from "@/components/briefing/BriefingAssistant";
 import { RefreshCw, Mail, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -130,110 +131,125 @@ ${operator.contact?.email ? `Email: ${operator.contact.email}\n` : ''}${operator
             </Button>
           </Card>
         ) : (
-          /* Cards par aéroport */
-          briefings.map(briefing => (
-            <Card key={briefing.airport_icao} className="p-6 space-y-6">
-              {/* Header aéroport */}
-              <div className="flex items-center gap-3">
-                <h2 className="text-2xl font-medium">{briefing.airport_icao}</h2>
-                {isHotNow(briefing.hot_hours) && (
-                  <Badge variant="destructive">Live now</Badge>
-                )}
-              </div>
+          /* Layout 2 colonnes: Cards + Assistant */
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Mobile: Assistant en premier */}
+            <div className="lg:hidden">
+              <BriefingAssistant briefs={briefings} />
+            </div>
 
-              {/* Section 1: Hot Hours */}
-              {briefing.hot_hours && briefing.hot_hours.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium mb-3">Hot Hours Today</h3>
-                  <HeatStrip 
-                    hourData={briefing.hot_hours.map(h => h.score)}
-                    topHours={getTopHours(briefing.hot_hours, 3).map(h => h.hour)}
-                  />
-                  <div className="flex gap-2 mt-3 flex-wrap">
-                    {getTopHours(briefing.hot_hours, 3).map(h => (
-                      <Badge key={h.hour} variant="secondary">
-                        {h.hour.toString().padStart(2, '0')}h UTC ({(h.score * 100).toFixed(0)}%)
-                      </Badge>
-                    ))}
+            {/* Colonne principale: Cards par aéroport */}
+            <div className="lg:col-span-2 space-y-6">
+              {briefings.map(briefing => (
+                <Card key={briefing.airport_icao} className="p-6 space-y-6">
+                  {/* Header aéroport */}
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-2xl font-medium">{briefing.airport_icao}</h2>
+                    {isHotNow(briefing.hot_hours) && (
+                      <Badge variant="destructive">Live now</Badge>
+                    )}
                   </div>
-                </div>
-              )}
 
-              {/* Section 2: Probable Routes */}
-              {briefing.probable_routes && briefing.probable_routes.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium mb-3">Probable Routes</h3>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Route</TableHead>
-                        <TableHead>Probability</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {briefing.probable_routes.slice(0, 5).map((route, i) => (
-                        <TableRow key={i}>
-                          <TableCell>
-                            <code className="text-sm font-mono">{route.dep} → {route.arr}</code>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">
-                              {(route.prob * 100).toFixed(0)}%
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => openFindCover(route.dep, route.arr)}
-                            >
-                              Find Cover
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-
-              {/* Section 3: Priority Operators */}
-              {briefing.priority_operators && briefing.priority_operators.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-medium mb-3">Priority Operators</h3>
-                  <div className="space-y-3">
-                    {briefing.priority_operators.slice(0, 3).map((op, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex-1">
-                          <p className="font-medium">{op.name}</p>
-                          <p className="text-sm text-muted-foreground">{op.reason}</p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => copyEmailScript(op, briefing.airport_icao)}
-                          >
-                            <Mail className="h-4 w-4 mr-2" />
-                            Copy email
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm"
-                            disabled
-                            title="Operator details coming soon"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
+                  {/* Section 1: Hot Hours */}
+                  {briefing.hot_hours && briefing.hot_hours.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-3">Hot Hours Today</h3>
+                      <HeatStrip 
+                        hourData={briefing.hot_hours.map(h => h.score)}
+                        topHours={getTopHours(briefing.hot_hours, 3).map(h => h.hour)}
+                      />
+                      <div className="flex gap-2 mt-3 flex-wrap">
+                        {getTopHours(briefing.hot_hours, 3).map(h => (
+                          <Badge key={h.hour} variant="secondary">
+                            {h.hour.toString().padStart(2, '0')}h UTC ({(h.score * 100).toFixed(0)}%)
+                          </Badge>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </Card>
-          ))
+                    </div>
+                  )}
+
+                  {/* Section 2: Probable Routes */}
+                  {briefing.probable_routes && briefing.probable_routes.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-3">Probable Routes</h3>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Route</TableHead>
+                            <TableHead>Probability</TableHead>
+                            <TableHead>Action</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {briefing.probable_routes.slice(0, 5).map((route, i) => (
+                            <TableRow key={i}>
+                              <TableCell>
+                                <code className="text-sm font-mono">{route.dep} → {route.arr}</code>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline">
+                                  {(route.prob * 100).toFixed(0)}%
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => openFindCover(route.dep, route.arr)}
+                                >
+                                  Find Cover
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+
+                  {/* Section 3: Priority Operators */}
+                  {briefing.priority_operators && briefing.priority_operators.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-3">Priority Operators</h3>
+                      <div className="space-y-3">
+                        {briefing.priority_operators.slice(0, 3).map((op, i) => (
+                          <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex-1">
+                              <p className="font-medium">{op.name}</p>
+                              <p className="text-sm text-muted-foreground">{op.reason}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => copyEmailScript(op, briefing.airport_icao)}
+                              >
+                                <Mail className="h-4 w-4 mr-2" />
+                                Copy email
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                disabled
+                                title="Operator details coming soon"
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+
+            {/* Desktop: Assistant sticky à droite */}
+            <div className="hidden lg:block">
+              <BriefingAssistant briefs={briefings} />
+            </div>
+          </div>
         )}
       </div>
     </AppLayout>
