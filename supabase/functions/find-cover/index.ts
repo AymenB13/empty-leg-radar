@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
     // 1. Query operator_route_intel_90d for matching routes
     let operatorQuery = supabase
       .from('operator_route_intel_90d')
-      .select('operator_name, dep_icao, arr_icao, flights_90d, short_turn_rate, median_block_mins, last_seen_at')
+      .select('operator_name, dep_icao, arr_icao, flights_90d, median_block_mins')
       .eq('dep_icao', dep_icao)
       .order('flights_90d', { ascending: false });
 
@@ -52,15 +52,10 @@ Deno.serve(async (req) => {
     // 2. Score operators
     const scoredOperators = routeData?.map(r => {
       const frequency = r.flights_90d / 90; // flights per day
-      const turnBonus = 1 + (r.short_turn_rate || 0);
-      const recencyDays = r.last_seen_at 
-        ? Math.floor((Date.now() - new Date(r.last_seen_at).getTime()) / (1000 * 60 * 60 * 24))
-        : 90;
-      const recencyBonus = recencyDays < 7 ? 1.5 : recencyDays < 30 ? 1.0 : 0.5;
       
       return {
         ...r,
-        score: frequency * turnBonus * recencyBonus,
+        score: frequency,
       };
     }).sort((a, b) => b.score - a.score) || [];
 
@@ -79,9 +74,8 @@ Deno.serve(async (req) => {
       
       return {
         name: op.operator_name,
-        reason: `Flew ${route} ${op.flights_90d}x last 90d, median block ${op.median_block_mins || 'N/A'}min, short-turn rate ${Math.round((op.short_turn_rate || 0) * 100)}%`,
+        reason: `Flew ${route} ${op.flights_90d}x last 90d, median block ${op.median_block_mins || 'N/A'}min`,
         flights_90d: op.flights_90d,
-        short_turn_rate: op.short_turn_rate || 0,
         median_block_mins: op.median_block_mins || 0,
         contact: contact ? {
           email: contact.email_sales || undefined,
@@ -195,7 +189,7 @@ We're helping a client with a ${aircraftStr} request:
 • Route: ${route}
 • Date/Time: ${dateStr} around ${timeStr}
 
-Based on public patterns, ${operator} flew this route ${routeInfo.flights_90d}x in the last 90 days (median block ${routeInfo.median_block_mins || 'N/A'}min, short-turn rate ${Math.round((routeInfo.short_turn_rate || 0) * 100)}%).
+Based on public patterns, ${operator} flew this route ${routeInfo.flights_90d}x in the last 90 days (median block ${routeInfo.median_block_mins || 'N/A'}min).
 
 Would you have availability? If so, who's the best ops/charter contact?
 

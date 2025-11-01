@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
       // 2. PROBABLE ROUTES - top 10 routes by probability
       const { data: routes, error: routesErr } = await supabase
         .from('operator_route_intel_90d')
-        .select('dep_icao, arr_icao, flights_90d, short_turn_rate, last_seen_at')
+        .select('dep_icao, arr_icao, flights_90d')
         .eq('dep_icao', airport)
         .order('flights_90d', { ascending: false })
         .limit(20);
@@ -121,16 +121,11 @@ Deno.serve(async (req) => {
       const probable_routes: ProbableRoute[] = routes
         ?.map(r => {
           const frequency = r.flights_90d / 90; // flights per day
-          const turnBonus = 1 + (r.short_turn_rate || 0);
-          const recencyDays = r.last_seen_at 
-            ? Math.floor((Date.now() - new Date(r.last_seen_at).getTime()) / (1000 * 60 * 60 * 24))
-            : 90;
-          const recencyBonus = recencyDays < 7 ? 1.5 : recencyDays < 30 ? 1.0 : 0.5;
           
           return {
             dep: r.dep_icao,
             arr: r.arr_icao,
-            prob: Math.min(1, frequency * turnBonus * recencyBonus / 10),
+            prob: Math.min(1, frequency / 5), // Normalize to 0-1 range
           };
         })
         .sort((a, b) => b.prob - a.prob)
