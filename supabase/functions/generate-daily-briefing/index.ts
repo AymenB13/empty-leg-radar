@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       // 1. HOT HOURS - aggregate hod_hist_90d from all routes departing this airport
       const { data: routeData, error: routeError } = await supabase
         .from('operator_route_intel_90d')
-        .select('hod_hist_90d, legs_90d')
+        .select('hod_hist_90d, flights_90d')
         .eq('dep_icao', airport);
 
       if (routeError) {
@@ -70,13 +70,13 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      // Aggregate hot hours (weighted by legs_90d)
+      // Aggregate hot hours (weighted by flights_90d)
       const hourScores = new Array(24).fill(0);
       let totalWeight = 0;
 
       routeData?.forEach(route => {
         if (route.hod_hist_90d && Array.isArray(route.hod_hist_90d)) {
-          const weight = route.legs_90d || 1;
+          const weight = route.flights_90d || 1;
           route.hod_hist_90d.forEach((score: number, hour: number) => {
             hourScores[hour] += score * weight;
           });
@@ -108,9 +108,9 @@ Deno.serve(async (req) => {
       // 2. PROBABLE ROUTES - top 10 routes by probability
       const { data: routes, error: routesErr } = await supabase
         .from('operator_route_intel_90d')
-        .select('dep_icao, arr_icao, legs_90d, short_turn_rate, last_seen_at')
+        .select('dep_icao, arr_icao, flights_90d, short_turn_rate, last_seen_at')
         .eq('dep_icao', airport)
-        .order('legs_90d', { ascending: false })
+        .order('flights_90d', { ascending: false })
         .limit(20);
 
       if (routesErr) {
@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
 
       const probable_routes: ProbableRoute[] = routes
         ?.map(r => {
-          const frequency = r.legs_90d / 90; // flights per day
+          const frequency = r.flights_90d / 90; // flights per day
           const turnBonus = 1 + (r.short_turn_rate || 0);
           const recencyDays = r.last_seen_at 
             ? Math.floor((Date.now() - new Date(r.last_seen_at).getTime()) / (1000 * 60 * 60 * 24))
