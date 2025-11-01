@@ -94,12 +94,9 @@ export default function DealTickets() {
                           {ticket.shortlist.operators.map((op, idx) => (
                             <Card key={idx} className="bg-muted/30">
                               <CardContent className="p-4 space-y-2">
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <p className="font-semibold">{op.name}</p>
-                                    <p className="text-xs text-muted-foreground">{op.reason}</p>
-                                  </div>
-                                  <Badge variant="outline">Score: {op.score.toFixed(1)}</Badge>
+                                <div>
+                                  <p className="font-semibold">{op.name}</p>
+                                  <p className="text-xs text-muted-foreground">{op.reason}</p>
                                 </div>
                                 
                                 {op.contact && (
