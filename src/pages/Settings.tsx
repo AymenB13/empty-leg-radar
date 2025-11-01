@@ -159,7 +159,7 @@ export default function Settings() {
           <Card className="p-6">
             <h2 className="text-lg font-medium">Probability Threshold</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Minimum probability to show signals (0.4-0.95). Recommended: 0.6-0.8
+              Minimum probability to show signals (5%-95%). Recommended: 60%-80%
             </p>
 
             <div className="mt-6 space-y-4">
@@ -167,7 +167,7 @@ export default function Settings() {
                 <Slider
                   value={[probThreshold * 100]}
                   onValueChange={(v) => setProbThreshold(v[0] / 100)}
-                  min={40}
+                  min={5}
                   max={95}
                   step={5}
                   className="flex-1"
@@ -178,11 +178,11 @@ export default function Settings() {
                     value={(probThreshold * 100).toFixed(0)}
                     onChange={(e) => {
                       const val = parseInt(e.target.value);
-                      if (val >= 40 && val <= 95) {
+                      if (val >= 5 && val <= 95) {
                         setProbThreshold(val / 100);
                       }
                     }}
-                    min={40}
+                    min={5}
                     max={95}
                     className="w-20 font-mono text-center"
                   />
