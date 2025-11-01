@@ -18,10 +18,9 @@ export function useSignals(filters?: SignalsFilter) {
 
       // Apply filters - from_icao OR to_icao
       if (filters?.airports?.length) {
-        const orConditions = filters.airports.map(apt => 
-          `from_icao.eq.${apt},to_icao.eq.${apt}`
-        ).join(',');
-        query = query.or(orConditions);
+        query = query.or(
+          `from_icao.in.(${filters.airports.join(',')}),to_icao.in.(${filters.airports.join(',')})`
+        );
       }
 
       const { data, error } = await query;
