@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+
 import { AppLayout } from "@/components/layouts/AppLayout";
-import { Loader2, ChevronDown, Copy } from "lucide-react";
+import { Loader2, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -121,65 +121,6 @@ export default function DealTickets() {
                                     )}
                                   </div>
                                 )}
-                                
-                                <Collapsible>
-                                  <CollapsibleTrigger asChild>
-                                    <Button variant="ghost" size="sm" className="w-full justify-between">
-                                      View Pitches
-                                      <ChevronDown className="h-4 w-4" />
-                                    </Button>
-                                  </CollapsibleTrigger>
-                                  <CollapsibleContent className="space-y-2 pt-2">
-                                    <div className="space-y-1">
-                                      <div className="flex justify-between items-center">
-                                        <p className="text-xs font-semibold">Short Pitch:</p>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={() => {
-                                            navigator.clipboard.writeText(op.pitches.short);
-                                            toast.success("Short pitch copied!");
-                                          }}
-                                        >
-                                          <Copy className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                      <p className="text-xs text-muted-foreground border-l-2 border-muted pl-2">{op.pitches.short}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <div className="flex justify-between items-center">
-                                        <p className="text-xs font-semibold">Urgent Pitch:</p>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={() => {
-                                            navigator.clipboard.writeText(op.pitches.urgent);
-                                            toast.success("Urgent pitch copied!");
-                                          }}
-                                        >
-                                          <Copy className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                      <p className="text-xs text-muted-foreground border-l-2 border-muted pl-2">{op.pitches.urgent}</p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <div className="flex justify-between items-center">
-                                        <p className="text-xs font-semibold">Neutral Pitch:</p>
-                                        <Button
-                                          size="sm"
-                                          variant="ghost"
-                                          onClick={() => {
-                                            navigator.clipboard.writeText(op.pitches.neutral);
-                                            toast.success("Neutral pitch copied!");
-                                          }}
-                                        >
-                                          <Copy className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                      <p className="text-xs text-muted-foreground border-l-2 border-muted pl-2">{op.pitches.neutral}</p>
-                                    </div>
-                                  </CollapsibleContent>
-                                </Collapsible>
                               </CardContent>
                             </Card>
                           ))}
