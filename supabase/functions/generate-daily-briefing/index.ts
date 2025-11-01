@@ -41,22 +41,29 @@ Deno.serve(async (req) => {
 
     console.log('Starting daily briefing generation...');
 
-    // Get airports from airports_watch (canonical source)
-    const { data: watchRows, error: wErr } = await supabase
-      .from('airports_watch')
-      .select('airport_icao')
-      .eq('enabled', true)
-      .order('airport_icao');
+    // Canonique : watch_airports.active = true
+    const { data: wa, error: waErr } = await supabase
+      .from('watch_airports')
+      .select('icao')
+      .eq('active', true)
+      .order('icao');
 
-    if (wErr) throw wErr;
+    if (waErr) throw waErr;
 
-    const uniqueAirports = [...new Set((watchRows ?? []).map(r => r.airport_icao).filter(Boolean))];
-    console.log(`Processing ${uniqueAirports.length} airports...`);
+    const airports = [...new Set((wa ?? [])
+      .map(r => (r.icao || '').toUpperCase())
+      .filter(Boolean))];
+
+    if (airports.length === 0) {
+      console.log('No active airports in watch_airports');
+    }
+
+    console.log(`Processing ${airports.length} airports...`);
 
     const today = new Date().toISOString().split('T')[0];
     const briefings = [];
 
-    for (const airport of uniqueAirports) {
+    for (const airport of airports) {
       console.log(`Processing ${airport}...`);
 
       // 1. HOT HOURS - aggregate hod_hist_90d from all routes departing this airport
