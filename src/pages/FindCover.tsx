@@ -1,166 +1,305 @@
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { AppLayout } from "@/components/layouts/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader2, Search, Copy, Phone, Save } from "lucide-react";
+import { toast } from "sonner";
+import { FindCoverOperator, FindCoverTail } from "@/types/database";
+import { useCreateDealTicket } from "@/hooks/supabase/useDealTickets";
+
+interface FindCoverResults {
+  operators: FindCoverOperator[];
+  tails: FindCoverTail[];
+  message?: string;
+}
 
 export default function FindCover() {
-  const [searchParams] = useSearchParams();
-
-  const defaults = useMemo(() => {
-    return {
-      dep: (searchParams.get("dep") ?? "").toUpperCase(),
-      arr: (searchParams.get("arr") ?? "").toUpperCase(),
-      date: searchParams.get("date") ?? new Date().toISOString().slice(0, 10),
-    };
-  }, [searchParams]);
-
-  const [dep, setDep] = useState(defaults.dep);
-  const [arr, setArr] = useState(defaults.arr);
-  const [date, setDate] = useState(defaults.date);
+  const [dep, setDep] = useState("");
+  const [arr, setArr] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<any>(null);
+  const [results, setResults] = useState<FindCoverResults | null>(null);
+
+  const { mutate: createDealTicket, isPending: savingTicket } = useCreateDealTicket();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!dep) return;
+
     setLoading(true);
     setResults(null);
-    
-    const { data, error } = await supabase.functions.invoke('find-cover', {
-      body: {
-        dep_icao: dep,
-        arr_icao: arr || undefined,
-        request_date: date,
-      }
-    });
-    
-    setLoading(false);
-    
-    if (error) {
-      toast.error(`Error: ${error.message}`);
-      return;
+
+    try {
+      const { data, error } = await supabase.functions.invoke('find-cover', {
+        body: {
+          dep_icao: dep.toUpperCase(),
+          arr_icao: arr ? arr.toUpperCase() : undefined,
+          request_date: date || undefined,
+          request_time_utc: time || undefined,
+        },
+      });
+
+      if (error) throw error;
+      setResults(data);
+    } catch (error: any) {
+      console.error('Error finding cover:', error);
+      toast.error(`Failed to find cover: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
-    
-    setResults(data);
-    toast.success(`Found ${data.operators.length} operators, ${data.tails.length} tails`);
+  };
+
+  const copyPitch = (text: string, variant: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${variant} pitch copied to clipboard!`);
+  };
+
+  const handleSaveDealTicket = () => {
+    if (!results || !dep) return;
+
+    createDealTicket({
+      dep_icao: dep.toUpperCase(),
+      arr_icao: arr ? arr.toUpperCase() : undefined,
+      req_date: date || undefined,
+      req_time_utc: time || undefined,
+      shortlist: {
+        operators: results.operators,
+        tails: results.tails,
+      },
+    });
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-semibold">Find Cover</h1>
-      <p className="text-sm text-muted-foreground">
-        Entrez un corridor et une date. Cette page est un placeholder (la recherche réelle arrive au Sprint 3).
-      </p>
+    <AppLayout>
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header + Form inline */}
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
+          <div>
+            <h1 className="text-3xl font-bold">Instant Cover</h1>
+            <p className="text-muted-foreground mt-1">
+              Find operators & tails for any corridor in seconds
+            </p>
+          </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Paramètres</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <div className="sm:col-span-1">
-              <label className="text-sm">DEP (ICAO)</label>
+          {/* Compact form */}
+          <form onSubmit={handleSubmit} className="flex flex-wrap gap-2 items-end">
+            <div>
+              <label className="text-xs font-medium">DEP</label>
               <Input
                 value={dep}
-                onChange={(e) => setDep(e.target.value.toUpperCase())}
-                placeholder="KTEB"
+                onChange={(e) => setDep(e.target.value)}
+                className="w-20 uppercase"
                 maxLength={4}
+                required
+                placeholder="ICAO"
               />
             </div>
-            <div className="sm:col-span-1">
-              <label className="text-sm">ARR (ICAO)</label>
+            <div>
+              <label className="text-xs font-medium">ARR</label>
               <Input
                 value={arr}
-                onChange={(e) => setArr(e.target.value.toUpperCase())}
-                placeholder="KVNY (optionnel)"
+                onChange={(e) => setArr(e.target.value)}
+                className="w-20 uppercase"
                 maxLength={4}
+                placeholder="Any"
               />
             </div>
-            <div className="sm:col-span-1">
-              <label className="text-sm">Date (UTC)</label>
+            <div>
+              <label className="text-xs font-medium">Date</label>
               <Input
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
+                className="w-36"
               />
             </div>
-            <div className="sm:col-span-1 flex items-end">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Searching..." : "Find Cover"}
-              </Button>
+            <div>
+              <label className="text-xs font-medium">Time (UTC)</label>
+              <Input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="w-28"
+              />
             </div>
+            <Button type="submit" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+              <span className="ml-2">Search</span>
+            </Button>
           </form>
-        </CardContent>
-      </Card>
+        </div>
 
-      {results && (
-        <>
-          <Card>
-            <CardHeader>
-              <CardTitle>Operators ({results.operators.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {results.operators.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No operators found for this route.</p>
-              ) : (
-                <div className="space-y-4">
-                  {results.operators.map((op: any) => (
-                    <div key={op.name} className="border-b pb-4 last:border-0">
-                      <p className="font-medium">{op.name}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{op.reason}</p>
-                      {op.contact?.email && (
-                        <p className="text-sm mt-1">📧 {op.contact.email}</p>
-                      )}
-                      {op.contact?.phone && (
-                        <p className="text-sm">📞 {op.contact.phone}</p>
-                      )}
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="mt-2"
-                        onClick={() => {
-                          navigator.clipboard.writeText(op.email_script);
-                          toast.success("Email script copied to clipboard");
-                        }}
-                      >
-                        Copy email script
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        {/* Results */}
+        {results && (
+          <>
+            {results.message && (
+              <Card className="border-dashed">
+                <CardContent className="py-8 text-center text-muted-foreground">
+                  <p>{results.message}</p>
+                </CardContent>
+              </Card>
+            )}
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Tails ({results.tails.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {results.tails.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No tails found for this route.</p>
-              ) : (
-                <div className="space-y-3">
-                  {results.tails.map((tail: any) => (
-                    <div key={tail.n_number} className="border-b pb-3 last:border-0">
-                      <p className="font-medium">{tail.n_number} - {tail.model}</p>
-                      <p className="text-sm text-muted-foreground mt-1">{tail.reason}</p>
-                      <p className="text-sm">Operator: {tail.operator}</p>
-                      {tail.last_seen && (
-                        <p className="text-sm text-muted-foreground">
-                          Last seen: {new Date(tail.last_seen).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </>
-      )}
-    </div>
+            {/* Operators Section */}
+            {results.operators.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Operators ({results.operators.length})</span>
+                    <Badge variant="outline">Top {results.operators.length}</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {results.operators.map((op, idx) => (
+                      <div key={idx} className="border-b pb-4 last:border-0">
+                        {/* Header with score */}
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{op.name}</span>
+                              <Badge variant="secondary">Score: {(op.score * 100).toFixed(0)}</Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-1">{op.reason}</p>
+                          </div>
+                        </div>
+
+                        {/* Stats row */}
+                        <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                          <span>✈️ {op.flights_90d} flights/90d</span>
+                          {op.median_block_mins > 0 && (
+                            <span>⏱️ {op.median_block_mins}m median</span>
+                          )}
+                        </div>
+
+                        {/* Contact info */}
+                        {op.contact && (
+                          <div className="flex gap-4 mt-2 text-sm flex-wrap">
+                            {op.contact.phone && (
+                              <a href={`tel:${op.contact.phone}`} className="text-primary hover:underline">
+                                📞 {op.contact.phone}
+                              </a>
+                            )}
+                            {op.contact.email && (
+                              <a href={`mailto:${op.contact.email}`} className="text-primary hover:underline">
+                                📧 {op.contact.email}
+                              </a>
+                            )}
+                            {op.contact.website && (
+                              <a href={op.contact.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                🌐 Website
+                              </a>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex gap-2 mt-3 flex-wrap">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="outline">
+                                <Copy className="h-4 w-4 mr-1" />
+                                Copy Pitch
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem onClick={() => copyPitch(op.pitches.short, 'Short')}>
+                                Short (WhatsApp)
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => copyPitch(op.pitches.neutral, 'Neutral')}>
+                                Neutral (Email)
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => copyPitch(op.pitches.urgent, 'Urgent')}>
+                                Urgent
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+
+                          {op.contact?.phone && (
+                            <Button size="sm" variant="ghost" asChild>
+                              <a href={`tel:${op.contact.phone}`}>
+                                <Phone className="h-4 w-4 mr-1" />
+                                Call
+                              </a>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Tails Section */}
+            {results.tails.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Aircraft Tails ({results.tails.length})</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {results.tails.map((tail, idx) => (
+                      <div key={idx} className="border-b pb-3 last:border-0">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="font-medium font-mono">{tail.n_number}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {tail.model} • {tail.operator}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {tail.reason}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Last seen: {new Date(tail.last_seen).toLocaleDateString()}
+                              {tail.habits && (
+                                <span className="ml-2">
+                                  • RTB rate: {(tail.habits.rtb_rate * 100).toFixed(0)}%
+                                  • Short-turn: {(tail.habits.short_turn_rate * 100).toFixed(0)}%
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              navigator.clipboard.writeText(tail.n_number);
+                              toast.success(`Copied ${tail.n_number}`);
+                            }}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Save Deal Ticket CTA */}
+            {results.operators.length > 0 && (
+              <div className="sticky bottom-6 flex justify-center">
+                <Button size="lg" onClick={handleSaveDealTicket} disabled={savingTicket} className="shadow-lg">
+                  {savingTicket ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                  Save Deal Ticket
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </AppLayout>
   );
 }

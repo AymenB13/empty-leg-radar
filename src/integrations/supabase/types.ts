@@ -107,6 +107,51 @@ export type Database = {
         }
         Relationships: []
       }
+      deal_tickets: {
+        Row: {
+          aircraft_category: string | null
+          arr_icao: string | null
+          created_at: string
+          dep_icao: string
+          id: string
+          notes: string | null
+          req_date: string | null
+          req_time_utc: string | null
+          shortlist: Json
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aircraft_category?: string | null
+          arr_icao?: string | null
+          created_at?: string
+          dep_icao: string
+          id?: string
+          notes?: string | null
+          req_date?: string | null
+          req_time_utc?: string | null
+          shortlist: Json
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          aircraft_category?: string | null
+          arr_icao?: string | null
+          created_at?: string
+          dep_icao?: string
+          id?: string
+          notes?: string | null
+          req_date?: string | null
+          req_time_utc?: string | null
+          shortlist?: Json
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       emptyleg_alerts: {
         Row: {
           channel: string
@@ -1637,18 +1682,9 @@ export type Database = {
       }
     }
     Functions: {
-      norm_n: {
-        Args: { t: string }
-        Returns: string
-      }
-      refresh_intel_matviews: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      refresh_mv_signals_publish: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      norm_n: { Args: { t: string }; Returns: string }
+      refresh_intel_matviews: { Args: never; Returns: undefined }
+      refresh_mv_signals_publish: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

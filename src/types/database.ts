@@ -116,3 +116,56 @@ export type DailyBriefing = {
   }[];
   computed_at: string;
 };
+
+// Types pour Deal Tickets
+export type DealTicket = {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  dep_icao: string;
+  arr_icao: string | null;
+  req_date: string | null;
+  req_time_utc: string | null;
+  aircraft_category: string | null;
+  shortlist: DealTicketShortlist;
+  status: 'open' | 'contacted' | 'won' | 'lost';
+  notes: string | null;
+};
+
+export type DealTicketShortlist = {
+  operators: FindCoverOperator[];
+  tails: FindCoverTail[];
+};
+
+export type FindCoverOperator = {
+  name: string;
+  score: number;
+  reason: string;
+  flights_90d: number;
+  median_block_mins: number;
+  contact?: {
+    email?: string;
+    phone?: string;
+    website?: string;
+  };
+  pitches: {
+    short: string;
+    neutral: string;
+    urgent: string;
+  };
+};
+
+export type FindCoverTail = {
+  n_number: string;
+  model: string;
+  base: string;
+  operator: string;
+  last_seen: string;
+  reason: string;
+  habits?: {
+    rtb_rate: number;
+    short_turn_rate: number;
+    p95_turn_mins: number;
+  } | null;
+};
