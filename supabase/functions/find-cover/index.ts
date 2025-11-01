@@ -218,7 +218,7 @@ Deno.serve(async (req) => {
     const route = arr_icao ? `${dep_icao}→${arr_icao}` : dep_icao;
     let tailQuery = supabase
       .from('legs_90d')
-      .select('n_number, aircraft_model, best_time_utc, airport_dep_icao, airport_arr_icao')
+      .select('n_number, best_time_utc, airport_dep_icao, airport_arr_icao')
       .eq('airport_dep_icao', dep_icao);
 
     if (arr_icao) {
@@ -239,7 +239,6 @@ Deno.serve(async (req) => {
       if (!existing) {
         tailStats.set(flight.n_number, {
           n_number: flight.n_number,
-          model: flight.aircraft_model,
           count: 1,
           last_seen: flight.best_time_utc,
         });
@@ -288,7 +287,7 @@ Deno.serve(async (req) => {
 
       return {
         n_number: t.n_number,
-        model: info?.aircraft_model || t.model || 'Unknown',
+        model: info?.aircraft_model || 'Unknown',
         base: base || 'Unknown',
         operator: info?.operator_primary || 'Unknown',
         last_seen: t.last_seen,
