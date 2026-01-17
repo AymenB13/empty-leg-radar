@@ -730,6 +730,21 @@ export type Database = {
         }
         Relationships: []
       }
+      keepalive: {
+        Row: {
+          id: number
+          ts: string | null
+        }
+        Insert: {
+          id?: never
+          ts?: string | null
+        }
+        Update: {
+          id?: never
+          ts?: string | null
+        }
+        Relationships: []
+      }
       ml_models: {
         Row: {
           algo: string
