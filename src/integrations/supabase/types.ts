@@ -1698,6 +1698,7 @@ export type Database = {
     }
     Functions: {
       norm_n: { Args: { t: string }; Returns: string }
+      purge_old_data: { Args: never; Returns: undefined }
       refresh_intel_matviews: { Args: never; Returns: undefined }
       refresh_mv_signals_publish: { Args: never; Returns: undefined }
     }
