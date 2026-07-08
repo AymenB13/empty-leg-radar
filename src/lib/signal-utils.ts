@@ -23,6 +23,80 @@ export function buildPitchCopy(signal: EmptylegSignal): string {
   return `N${signal.reg} at ${signal.airport_icao} → ${signal.to_icao} in ${timeStr}. Empty-leg prob ${probStr}. Reasons: ${signal.reason || "—"}.`;
 }
 
+export type SignalVerdict = {
+  key: string;
+  label: string;
+  detail: string;
+  tone: "strong" | "medium" | "weak" | "neutral" | "unknown";
+};
+
+// Translate the raw scorer reason tokens into a plain-language verdict for brokers.
+// The base-direction token is the primary driver of empty-leg likelihood.
+export function getSignalVerdict(
+  reason: string | null | undefined,
+  toIcao?: string | null
+): SignalVerdict {
+  const tokens = (reason || "").split("|").map((t) => t.trim()).filter(Boolean);
+  const has = (t: string) => tokens.some((x) => x === t || x.startsWith(`${t}(`));
+
+  if (has("return_to_base") || has("to_base")) {
+    return {
+      key: "return_to_base",
+      label: "Returning to base",
+      detail: toIcao
+        ? `Deadheading home to ${toIcao} — likely flying empty. Call the operator first.`
+        : "Deadheading home — likely flying empty. Call the operator first.",
+      tone: "strong",
+    };
+  }
+  if (has("heading_home")) {
+    return {
+      key: "heading_home",
+      label: "Heading toward base",
+      detail: "Repositioning closer to home — possible empty leg.",
+      tone: "medium",
+    };
+  }
+  if (has("leaving_base") || has("from_base") || has("base_departure")) {
+    return {
+      key: "leaving_base",
+      label: "Leaving base",
+      detail: "Outbound from home base — likely a passenger leg, not empty.",
+      tone: "weak",
+    };
+  }
+  if (has("heading_away")) {
+    return {
+      key: "heading_away",
+      label: "Heading away from base",
+      detail: "Moving away from home — unlikely to be empty.",
+      tone: "weak",
+    };
+  }
+  if (has("base_unknown")) {
+    return {
+      key: "base_unknown",
+      label: "Base not yet learned",
+      detail: "No home base on file for this tail — direction can't be qualified yet.",
+      tone: "unknown",
+    };
+  }
+  if (has("lateral")) {
+    return {
+      key: "lateral",
+      label: "Lateral trip",
+      detail: "Neither toward nor away from its base.",
+      tone: "neutral",
+    };
+  }
+  return {
+    key: "other",
+    label: "Fast turnaround",
+    detail: "Short ground time flagged this aircraft.",
+    tone: "neutral",
+  };
+}
+
 export async function sendToSlack(webhook: string, message: string): Promise<void> {
   const response = await fetch(webhook, {
     method: "POST",

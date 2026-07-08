@@ -3,8 +3,9 @@ import { SignalPublishEnriched } from "@/types/database";
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink, Shield, HelpCircle } from "lucide-react";
+import { Plane, Clock, Building2, AlertCircle, Copy, ExternalLink, Shield, HelpCircle, Home } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
+import { getSignalVerdict } from "@/lib/signal-utils";
 import { toast } from "sonner";
 import { OperatorInfoDrawer } from "@/components/operators/OperatorInfoDrawer";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -28,6 +29,9 @@ export function HeadsUpCard({ signal }: HeadsUpCardProps) {
   const timeToDepart = signal.etd_next 
     ? formatDistanceToNow(new Date(signal.etd_next), { addSuffix: true })
     : "Unknown";
+
+  // Plain-language empty-leg verdict derived from the scorer's base-direction reason.
+  const verdict = getSignalVerdict(signal.reason, signal.to_icao);
 
   // Priority styling based on prob_headsup
   const getPriorityBorder = (prob: number | null) => {
@@ -210,20 +214,28 @@ Reason: ${signal.reason || "N/A"}
           </Tooltip>
         </div>
 
-        {/* Reason */}
-        {signal.reason && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-start gap-2 text-xs bg-muted/50 p-2 rounded cursor-help">
-                <AlertCircle className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">{signal.reason}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">Top driver behind the prediction (e.g., short ground time).</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
+        {/* Empty-leg verdict — what this means for the broker */}
+        <div
+          className={
+            verdict.tone === "strong"
+              ? "rounded-md border p-2.5 bg-green-100 text-green-900 border-green-300 dark:bg-green-900/40 dark:text-green-100"
+              : verdict.tone === "medium"
+              ? "rounded-md border p-2.5 bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/40 dark:text-amber-100"
+              : verdict.tone === "unknown"
+              ? "rounded-md border border-dashed p-2.5 bg-muted/50 text-muted-foreground"
+              : "rounded-md border p-2.5 bg-muted text-muted-foreground"
+          }
+        >
+          <div className="flex items-center gap-2">
+            {verdict.tone === "strong" || verdict.tone === "medium" ? (
+              <Home className="h-4 w-4 flex-shrink-0" />
+            ) : (
+              <Plane className="h-4 w-4 flex-shrink-0" />
+            )}
+            <span className="text-sm font-semibold">{verdict.label}</span>
+          </div>
+          <p className="text-xs mt-1 opacity-90">{verdict.detail}</p>
+        </div>
 
         {/* Timing details */}
         <div className="text-xs text-muted-foreground border-t pt-2 space-y-1">
