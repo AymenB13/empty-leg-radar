@@ -9,17 +9,7 @@ interface ProbabilityBadgeProps {
 
 export function ProbabilityBadge({ signal }: ProbabilityBadgeProps) {
   const displayValue = formatProbability(signal.prob_final);
-  
-  const tooltipContent = (
-    <div className="text-xs space-y-1">
-      <div>Baseline: {signal.prob_baseline ? (signal.prob_baseline * 100).toFixed(0) : "—"}%</div>
-      {signal.is_ml_augmented && (
-        <div>ML: {signal.prob_ml ? (signal.prob_ml * 100).toFixed(0) : "—"}%</div>
-      )}
-      <div className="font-medium">Final: {signal.prob_final ? (signal.prob_final * 100).toFixed(0) : "—"}%</div>
-    </div>
-  );
-  
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -28,7 +18,9 @@ export function ProbabilityBadge({ signal }: ProbabilityBadgeProps) {
         </Badge>
       </TooltipTrigger>
       <TooltipContent>
-        {tooltipContent}
+        <div className="text-xs">
+          Score empty-leg&nbsp;: {signal.prob_final ? (signal.prob_final * 100).toFixed(0) : "—"}% (heuristique)
+        </div>
       </TooltipContent>
     </Tooltip>
   );

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { Search, Calendar, Settings } from "lucide-react";
+import { Plane, Target, Activity, Calendar, Settings } from "lucide-react";
 import { UserMenu } from "./UserMenu";
 import { AboutDialog } from "@/components/AboutDialog";
 
@@ -10,14 +10,15 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const navItems = [
-    { to: "/find-cover", icon: Search, label: "Find Cover" },
+    { to: "/signals", icon: Plane, label: "Signals" },
+    { to: "/opportunities", icon: Target, label: "Opportunities" },
+    { to: "/patterns", icon: Activity, label: "Patterns" },
     { to: "/briefing", icon: Calendar, label: "Briefing" },
     { to: "/settings", icon: Settings, label: "Settings" },
   ];
-  
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Top Bar */}
       <header className="h-14 border-b border-border bg-background flex items-center justify-between px-6">
         <div className="flex items-center gap-3">
           <h1 className="text-lg font-medium">Empty Leg Radar</h1>
@@ -25,9 +26,8 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
         <UserMenu />
       </header>
-      
+
       <div className="flex flex-1">
-        {/* Left Sidebar */}
         <aside className="w-48 border-r border-border bg-background">
           <nav className="p-4 space-y-1">
             {navItems.map((item) => (
@@ -48,8 +48,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             ))}
           </nav>
         </aside>
-        
-        {/* Main Content */}
+
         <main className="flex-1 p-8 overflow-auto">
           {children}
         </main>
