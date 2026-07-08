@@ -207,23 +207,27 @@ Deno.serve(async () => {
         let prob_headsup  = 0.6 + Math.max(0, 90 - diffMin) / 300; // ~0.6..0.9
         let prob_baseline = 0.5;
 
-        // distance aéroport -> base
-        let distToBaseNm = null;
-        if (baseU && airportCoords.has(baseU) && airportCoords.has(airport)) {
-          const km = haversineKm(airportCoords.get(airport), airportCoords.get(baseU));
-          distToBaseNm = kmToNm(km);
+        // Distances à la base : depuis l'aéroport actuel ET depuis la destination (scoring directionnel)
+        let distCurrBaseNm = null, distDestBaseNm = null;
+        if (baseU && airportCoords.has(baseU)) {
+          if (airportCoords.has(airport)) distCurrBaseNm = kmToNm(haversineKm(airportCoords.get(airport), airportCoords.get(baseU)));
+          if (toIcao && airportCoords.has(toIcao)) distDestBaseNm = kmToNm(haversineKm(airportCoords.get(toIcao), airportCoords.get(baseU)));
         }
-        if (baseU && toIcao && baseU === toIcao) { prob_baseline += 0.15; reasons.push("return_to_base"); }
-        if (distToBaseNm != null) {
-          if (distToBaseNm <= 110) { prob_baseline += 0.08; reasons.push(`base_nearby(${Math.round(distToBaseNm)}nm)`); }
-          else if (distToBaseNm > 430) { prob_baseline -= 0.08; reasons.push(`base_far(${Math.round(distToBaseNm)}nm)`); }
-          else { reasons.push(`base_mid(${Math.round(distToBaseNm)}nm)`); }
-        } else { prob_baseline -= 0.03; reasons.push("base_unknown"); }
+        // Un empty leg = aller VERS la base (repositionnement à vide), pas être PRÈS de la base
+        if (!baseU) { prob_baseline -= 0.03; reasons.push("base_unknown"); }
+        else if (toIcao && baseU === toIcao) { prob_baseline += 0.20; reasons.push("return_to_base"); }
+        else if (distCurrBaseNm != null && distCurrBaseNm <= 40 && distDestBaseNm != null && distDestBaseNm > distCurrBaseNm) {
+          prob_baseline -= 0.12; reasons.push("leaving_base");
+        }
+        else if (distDestBaseNm != null && distCurrBaseNm != null && distDestBaseNm < distCurrBaseNm - 80) {
+          prob_baseline += 0.10; reasons.push(`heading_home(${Math.round(distDestBaseNm)}nm)`);
+        }
+        else if (distDestBaseNm != null && distCurrBaseNm != null && distDestBaseNm > distCurrBaseNm + 80) {
+          prob_baseline -= 0.05; reasons.push("heading_away");
+        }
+        else { reasons.push("lateral"); }
         if (diffMin <= 60) { prob_baseline += 0.06; reasons.push("very_short_turn"); }
         else if (diffMin > 180) { prob_baseline -= 0.06; reasons.push("long_turn"); }
-        if (reg && baseByReg[reg] && baseByReg[reg].toUpperCase() === toIcao) {
-          prob_baseline += 0.05; reasons.push("reg_base_match");
-        }
         prob_headsup  = clamp(prob_headsup, 0, 0.98);
         prob_baseline = clamp(prob_baseline, 0, 0.98);
 
@@ -324,7 +328,7 @@ Deno.serve(async () => {
         prob_baseline += 0.04;
         reasons.push(`last_arrival_${Math.round(recentArrMin)}min_ago`);
       }
-      if (baseU && toIcao && baseU === toIcao) { prob_baseline += 0.08; reasons.push("to_base"); }
+      if (baseU && toIcao && baseU === toIcao) { prob_baseline += 0.12; reasons.push("to_base"); }
       if (is_part135 === 1) reasons.push("part135_operator");
 
       prob_headsup  = clamp(prob_headsup, 0, 0.98);
